@@ -1,4 +1,4 @@
-package net.darmo.gui;
+package net.darmo_creations.minesweeper.gui;
 
 public enum Difficulty {
     EASY(9, 9, 10, "Easy"), NORMAL(16, 16, 40, "Normal"), HARD(32, 16, 100, "Hard"), EXPERT(32, 32, 200, "Expert");

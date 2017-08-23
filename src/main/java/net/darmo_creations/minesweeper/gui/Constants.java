@@ -1,4 +1,4 @@
-package net.darmo.gui;
+package net.darmo_creations.minesweeper.gui;
 
 /**
  * This class holds all the constants used in this application.

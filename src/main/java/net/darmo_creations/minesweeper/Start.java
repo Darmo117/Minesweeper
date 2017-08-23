@@ -1,6 +1,6 @@
-package net.darmo;
+package net.darmo_creations.minesweeper;
 
-import net.darmo.gui.MainFrame;
+import net.darmo_creations.minesweeper.gui.MainFrame;
 
 public class Start {
     

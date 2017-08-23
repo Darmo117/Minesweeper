@@ -1,4 +1,4 @@
-package net.darmo.gui;
+package net.darmo_creations.minesweeper.gui;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
