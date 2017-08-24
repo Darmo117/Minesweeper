@@ -3,6 +3,7 @@ dialog.update.title=Ĝisdatigo havebla
 
 popup.laf_error.title=Eraro
 popup.laf_error.text=Ne povis ŝarĝi sistemon GUI. Uzante defaŭlta.
+popup.confirm.title=Konfirmi
 popup.victory.title=Venko!
 popup.victory.text=Vi venkis!
 popup.game_over.title=La ludo finiĝis!

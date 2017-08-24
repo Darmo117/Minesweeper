@@ -3,6 +3,7 @@ dialog.update.title=Mise à jour disponible
 
 popup.laf_error.title=Erreur
 popup.laf_error.text=Impossible de charger le rendu système, utilisation du rendu par défaut.
+popup.confirm.title=Confirmer
 popup.victory.title=Victoire !
 popup.victory.text=Vous avez gagné !
 popup.game_over.title=Perdu !

@@ -3,6 +3,7 @@ dialog.update.title=Update Available
 
 popup.laf_error.title=Error
 popup.laf_error.text=Could not load system look and feel, using default.
+popup.confirm.title=Confirm
 popup.victory.title=Victory!
 popup.victory.text=You won!
 popup.game_over.title=Game Over!
