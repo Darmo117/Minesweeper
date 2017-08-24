@@ -16,24 +16,38 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.darmo_creations.minesweeper;
+package net.darmo_creations.minesweeper.events;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import net.darmo_creations.utils.events.AbstractEvent;
 
-import net.darmo_creations.gui_framework.ApplicationRegistry;
-import net.darmo_creations.gui_framework.config.Language;
+/**
+ * This type of event is fired the Timer class.
+ *
+ * @author Damien Vergnet
+ */
+public class TimerEvent extends AbstractEvent {
+  private final int hours, minutes, seconds;
 
-public class Start {
-  public static void main(String[] args) {
-    List<Language> l = new ArrayList<>();
-    l.add(new Language("English", Locale.US));
-    l.add(new Language("Français", Locale.FRANCE));
-    l.add(new Language("Esperanto", new Locale("eo")));
+  public TimerEvent(int hours, int minutes, int seconds) {
+    this.hours = hours;
+    this.minutes = minutes;
+    this.seconds = seconds;
+  }
 
-    ApplicationRegistry.setLanguages(l);
-    ApplicationRegistry.registerApplication(new Minesweeper());
-    net.darmo_creations.gui_framework.Start.run();
+  public int getHours() {
+    return this.hours;
+  }
+
+  public int getMinutes() {
+    return this.minutes;
+  }
+
+  public int getSeconds() {
+    return this.seconds;
+  }
+
+  @Override
+  public boolean isCancelable() {
+    return false;
   }
 }

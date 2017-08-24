@@ -18,22 +18,10 @@
  */
 package net.darmo_creations.minesweeper;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import net.darmo_creations.gui_framework.config.tags.BooleanTag;
 
-import net.darmo_creations.gui_framework.ApplicationRegistry;
-import net.darmo_creations.gui_framework.config.Language;
+public final class ConfigTags {
+  public static final BooleanTag TABLET_MODE = new BooleanTag("tablet_mode");
 
-public class Start {
-  public static void main(String[] args) {
-    List<Language> l = new ArrayList<>();
-    l.add(new Language("English", Locale.US));
-    l.add(new Language("Français", Locale.FRANCE));
-    l.add(new Language("Esperanto", new Locale("eo")));
-
-    ApplicationRegistry.setLanguages(l);
-    ApplicationRegistry.registerApplication(new Minesweeper());
-    net.darmo_creations.gui_framework.Start.run();
-  }
+  private ConfigTags() {}
 }

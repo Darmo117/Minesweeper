@@ -16,24 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.darmo_creations.minesweeper;
+package net.darmo_creations.minesweeper.events;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import net.darmo_creations.gui_framework.events.UserEvent;
 
-import net.darmo_creations.gui_framework.ApplicationRegistry;
-import net.darmo_creations.gui_framework.config.Language;
-
-public class Start {
-  public static void main(String[] args) {
-    List<Language> l = new ArrayList<>();
-    l.add(new Language("English", Locale.US));
-    l.add(new Language("Français", Locale.FRANCE));
-    l.add(new Language("Esperanto", new Locale("eo")));
-
-    ApplicationRegistry.setLanguages(l);
-    ApplicationRegistry.registerApplication(new Minesweeper());
-    net.darmo_creations.gui_framework.Start.run();
-  }
+/**
+ * Types of user events.
+ *
+ * @author Damien Vergnet
+ */
+public enum EventType implements UserEvent.Type {
+  NEW_GAME,
+  TOGGLE_TABLET_MODE;
 }

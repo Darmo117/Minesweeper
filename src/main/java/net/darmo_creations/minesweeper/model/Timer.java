@@ -16,24 +16,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.darmo_creations.minesweeper;
+package net.darmo_creations.minesweeper.model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import net.darmo_creations.gui_framework.ApplicationRegistry;
-import net.darmo_creations.gui_framework.config.Language;
+import net.darmo_creations.minesweeper.events.TimerEvent;
 
-public class Start {
-  public static void main(String[] args) {
-    List<Language> l = new ArrayList<>();
-    l.add(new Language("English", Locale.US));
-    l.add(new Language("Français", Locale.FRANCE));
-    l.add(new Language("Esperanto", new Locale("eo")));
+public class Timer extends Thread {
+  @Override
+  public void run() {
+    long startTime = System.currentTimeMillis();
 
-    ApplicationRegistry.setLanguages(l);
-    ApplicationRegistry.registerApplication(new Minesweeper());
-    net.darmo_creations.gui_framework.Start.run();
+    while (!interrupted()) {
+      GregorianCalendar cal = new GregorianCalendar();
+
+      cal.setTimeInMillis(System.currentTimeMillis() - startTime);
+      ApplicationRegistry.EVENTS_BUS.dispatchEvent(
+          new TimerEvent(cal.get(Calendar.HOUR_OF_DAY) - 1, cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND)));
+      try {
+        Thread.sleep(500);
+      }
+      catch (InterruptedException ex) {}
+    }
   }
 }

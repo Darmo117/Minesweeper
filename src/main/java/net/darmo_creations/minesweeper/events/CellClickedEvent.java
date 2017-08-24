@@ -16,24 +16,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.darmo_creations.minesweeper;
+package net.darmo_creations.minesweeper.events;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import net.darmo_creations.minesweeper.MainFrame.CellLabel;
+import net.darmo_creations.utils.events.AbstractEvent;
 
-import net.darmo_creations.gui_framework.ApplicationRegistry;
-import net.darmo_creations.gui_framework.config.Language;
+/**
+ * This type of event is fired when a cell in the grid is clicked.
+ *
+ * @author Damien Vergnet
+ */
+public class CellClickedEvent extends AbstractEvent {
+  private final CellLabel cell;
+  private final boolean isMainClick;
 
-public class Start {
-  public static void main(String[] args) {
-    List<Language> l = new ArrayList<>();
-    l.add(new Language("English", Locale.US));
-    l.add(new Language("Français", Locale.FRANCE));
-    l.add(new Language("Esperanto", new Locale("eo")));
+  public CellClickedEvent(CellLabel cell, boolean isMainClick) {
+    this.cell = cell;
+    this.isMainClick = isMainClick;
+  }
 
-    ApplicationRegistry.setLanguages(l);
-    ApplicationRegistry.registerApplication(new Minesweeper());
-    net.darmo_creations.gui_framework.Start.run();
+  public CellLabel getCell() {
+    return this.cell;
+  }
+
+  public boolean isMainClick() {
+    return this.isMainClick;
+  }
+
+  @Override
+  public boolean isCancelable() {
+    return false;
   }
 }
