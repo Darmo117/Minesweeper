@@ -8,6 +8,8 @@ popup.victory.text=You won!
 popup.game_over.title=Game Over!
 popup.game_over.text=You lose!
 popup.play_again.text=Play again?
+popup.change_language.confirm.text=The application will restart after change the language. Do you want to continue?
+popup.change_language.restart_error.text=Unable to restart the application.
 
 menu.game.text=Game
 menu.game.mnemonic=g
