@@ -33,6 +33,7 @@ import net.darmo_creations.minesweeper.MainFrame.CellLabel;
 import net.darmo_creations.minesweeper.events.CellClickedEvent;
 import net.darmo_creations.minesweeper.events.ChangeDifficultyEvent;
 import net.darmo_creations.minesweeper.events.EventType;
+import net.darmo_creations.minesweeper.events.TimerEvent;
 import net.darmo_creations.minesweeper.model.Cell;
 import net.darmo_creations.minesweeper.model.Difficulty;
 import net.darmo_creations.minesweeper.model.Timer;
@@ -67,27 +68,33 @@ public class MainController extends ApplicationController<MainFrame> {
   public void onUserEvent(UserEvent e) {
     super.onUserEvent(e);
 
-    UserEvent.Type type = e.getType();
-    if (type instanceof EventType) {
-      switch ((EventType) type) {
-        case NEW_GAME:
-          resetGame();
-          break;
-        case TOGGLE_TABLET_MODE:
-          toggleTabletMode();
-          break;
+    if (e.getType() == UserEvent.DefaultType.EXITING && !e.isCanceled()) {
+      this.timer.interrupt();
+    }
+    else {
+      UserEvent.Type type = e.getType();
+      if (type instanceof EventType) {
+        switch ((EventType) type) {
+          case NEW_GAME:
+            resetGame();
+            break;
+          case TOGGLE_TABLET_MODE:
+            toggleTabletMode();
+            break;
+        }
       }
     }
+  }
+
+  private void toggleTabletMode() {
+    this.tabletMode = !this.tabletMode;
+    this.config.setValue(ConfigTags.TABLET_MODE, this.tabletMode);
+    resetGame();
   }
 
   @SubsribeEvent
   public void onChangeDifficulty(ChangeDifficultyEvent e) {
     setGameDifficulty(e.getDifficulty());
-  }
-
-  private void toggleTabletMode() {
-    this.tabletMode = !this.tabletMode;
-    resetGame();
   }
 
   private void setGameDifficulty(Difficulty difficulty) {
@@ -96,6 +103,128 @@ public class MainController extends ApplicationController<MainFrame> {
       this.frame.setTitle(ApplicationRegistry.getApplication().getName() + " - " + difficulty.getName());
       resetGame();
     }
+  }
+
+  @SubsribeEvent
+  public void onCellClicked(CellClickedEvent e) {
+    Point p = e.getCell().getCoordinates();
+    if (!this.started) {
+      startGame(p);
+    }
+  
+    Cell cell = this.grid[p.y][p.x];
+    CellLabel label = e.getCell();
+  
+    if (e.isMainClick() && !cell.isFlagged()) {
+      clickCell(cell, label);
+    }
+    else {
+      if (cell.isFlagged()) {
+        cell.setMarked(true);
+        label.setIcon(Images.MARK);
+        if (this.started && !this.finished)
+          this.flags++;
+        this.frame.setRemainingMines(this.flags);
+      }
+      else if (cell.isMarked()) {
+        cell.setMarked(false);
+        label.setIcon(Images.EMPTY_CELL);
+      }
+      else {
+        cell.setFlagged(true);
+        label.setIcon(Images.FLAG);
+        if (this.started && !this.finished)
+          this.flags--;
+        this.frame.setRemainingMines(this.flags);
+      }
+    }
+  }
+
+  private void clickCell(Cell cell, CellLabel label) {
+    Point p = label.getCoordinates();
+    int nearbyMines = getNearbyMinesNumber(p.y, p.x);
+    int res = cell.click(nearbyMines);
+  
+    switch (res) {
+      case Cell.NOTHING:
+        label.click();
+        label.setBackground(new Color(150, 150, 150));
+        label.setIcon(Images.NUMBERS[nearbyMines]);
+        if (nearbyMines == 0)
+          exploreGrid(p.y, p.x, true);
+        if (checkVictory()) {
+          endGame(true);
+        }
+        break;
+      case Cell.MINE:
+        label.click();
+        label.setBackground(Color.RED);
+        label.setIcon(Images.MINE);
+        endGame(false);
+        break;
+    }
+  }
+
+  /**
+   * Explores all the non-clicked cells from the given starting cell that don't have any mines
+   * nearby.
+   * 
+   * @param row the starting row
+   * @param col the starting column
+   */
+  private void exploreGrid(int row, int col, boolean ignoreClicked) {
+    Cell cell = this.grid[row][col];
+  
+    if ((!ignoreClicked && cell.isClicked()) || cell.isFlagged())
+      return;
+  
+    if (!ignoreClicked)
+      clickCell(cell, this.frame.getCell(new Point(col, row)));
+  
+    if (getNearbyMinesNumber(row, col) == 0) {
+      if (row > 0)
+        exploreGrid(row - 1, col, false);
+      if (row > 0 && col < this.difficulty.getColumns() - 1)
+        exploreGrid(row - 1, col + 1, false);
+      if (col < this.difficulty.getColumns() - 1)
+        exploreGrid(row, col + 1, false);
+      if (row < this.difficulty.getRows() - 1 && col < this.difficulty.getColumns() - 1)
+        exploreGrid(row + 1, col + 1, false);
+      if (row < this.difficulty.getRows() - 1)
+        exploreGrid(row + 1, col, false);
+      if (row < this.difficulty.getRows() - 1 && col > 0)
+        exploreGrid(row + 1, col - 1, false);
+      if (col > 0)
+        exploreGrid(row, col - 1, false);
+      if (row > 0 && col > 0)
+        exploreGrid(row - 1, col - 1, false);
+    }
+  }
+
+  /**
+   * Returns {@code true} if the only remaining cells contain mines; false otherwise.
+   */
+  private boolean checkVictory() {
+    if (!this.started)
+      return false;
+  
+    boolean win = true;
+  
+    loop: for (int row = 0; row < this.difficulty.getRows(); row++) {
+      for (int col = 0; col < this.difficulty.getColumns(); col++) {
+        if (!this.grid[row][col].isClicked() && !this.grid[row][col].isMine()) {
+          win = false;
+          break loop;
+        }
+      }
+    }
+  
+    return win;
+  }
+
+  @SubsribeEvent
+  public void onTimerEvent(TimerEvent e) {
+    this.frame.setTimer(e.getHours(), e.getMinutes(), e.getSeconds());
   }
 
   private void resetGame() {
@@ -121,59 +250,6 @@ public class MainController extends ApplicationController<MainFrame> {
     this.frame.updateMenus(false);
     this.frame.pack();
     this.frame.repaint();
-  }
-
-  @SubsribeEvent
-  public void onCellClicked(CellClickedEvent e) {
-    Point p = e.getCell().getCoordinates();
-    if (!this.started) {
-      startGame(p);
-    }
-
-    Cell cell = this.grid[p.y][p.x];
-    CellLabel label = e.getCell();
-
-    if (e.isMainClick() && !cell.isFlagged()) {
-      int nearbyMines = getNearbyMinesNumber(p.y, p.x);
-      int res = cell.click(nearbyMines);
-
-      switch (res) {
-        case Cell.NOTHING:
-          label.setBackground(new Color(150, 150, 150));
-          label.setIcon(Images.NUMBERS[nearbyMines]);
-          if (nearbyMines == 0)
-            exploreGrid(p.y, p.x);
-          if (checkVictory()) {
-            endGame(true);
-          }
-          break;
-        case Cell.MINE:
-          label.setBackground(Color.RED);
-          label.setIcon(Images.MINE);
-          endGame(false);
-          break;
-      }
-    }
-    else {
-      if (cell.isFlagged()) {
-        cell.setMarked(true);
-        label.setIcon(Images.MARK);
-        if (this.started && !this.finished)
-          this.flags++;
-        this.frame.setRemainingMines(this.flags);
-      }
-      else if (cell.isMarked()) {
-        cell.setMarked(false);
-        label.setIcon(Images.EMPTY_CELL);
-      }
-      else {
-        cell.setFlagged(true);
-        label.setIcon(Images.FLAG);
-        if (this.started && !this.finished)
-          this.flags--;
-        this.frame.setRemainingMines(this.flags);
-      }
-    }
   }
 
   /**
@@ -233,59 +309,6 @@ public class MainController extends ApplicationController<MainFrame> {
     int choice = JOptionPane.showConfirmDialog(this.frame, msg, title, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
     if (choice == JOptionPane.YES_OPTION)
       resetGame();
-  }
-
-  /**
-   * Explores all the non-clicked cells from the given starting cell that don't have any mines
-   * nearby.
-   * 
-   * @param row the starting row
-   * @param col the starting column
-   */
-  private void exploreGrid(int row, int col) {
-    int mines = getNearbyMinesNumber(row, col);
-
-    if (!this.grid[row][col].isClicked())
-      ApplicationRegistry.EVENTS_BUS.dispatchEvent(new CellClickedEvent(this.frame.getCell(new Point(col, row)), true));
-    if (mines == 0) {
-      if (row > 0)
-        exploreGrid(row - 1, col);
-      if (row > 0 && col < this.difficulty.getColumns() - 1)
-        exploreGrid(row - 1, col + 1);
-      if (col < this.difficulty.getColumns() - 1)
-        exploreGrid(row, col + 1);
-      if (row < this.difficulty.getRows() - 1 && col < this.difficulty.getColumns() - 1)
-        exploreGrid(row + 1, col + 1);
-      if (row < this.difficulty.getRows() - 1)
-        exploreGrid(row + 1, col);
-      if (row < this.difficulty.getRows() - 1 && col > 0)
-        exploreGrid(row + 1, col - 1);
-      if (col > 0)
-        exploreGrid(row, col - 1);
-      if (row > 0 && col > 0)
-        exploreGrid(row - 1, col - 1);
-    }
-  }
-
-  /**
-   * Returns {@code true} if the only remaining cells contain mines; false otherwise.
-   */
-  private boolean checkVictory() {
-    if (!this.started)
-      return false;
-
-    boolean win = true;
-
-    loop: for (int row = 0; row < this.difficulty.getRows(); row++) {
-      for (int col = 0; col < this.difficulty.getColumns(); col++) {
-        if (!this.grid[row][col].isClicked() && !this.grid[row][col].isMine()) {
-          win = false;
-          break loop;
-        }
-      }
-    }
-
-    return win;
   }
 
   /**

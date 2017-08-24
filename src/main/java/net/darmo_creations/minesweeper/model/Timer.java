@@ -29,7 +29,7 @@ public class Timer extends Thread {
   public void run() {
     long startTime = System.currentTimeMillis();
 
-    while (!interrupted()) {
+    while (!currentThread().isInterrupted()) {
       GregorianCalendar cal = new GregorianCalendar();
 
       cal.setTimeInMillis(System.currentTimeMillis() - startTime);
@@ -38,7 +38,9 @@ public class Timer extends Thread {
       try {
         Thread.sleep(500);
       }
-      catch (InterruptedException ex) {}
+      catch (InterruptedException ex) {
+        return;
+      }
     }
   }
 }

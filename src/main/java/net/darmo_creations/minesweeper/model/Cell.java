@@ -75,7 +75,8 @@ public class Cell {
     }
   }
 
-  public static final int ALREADY_CLICKED = -1;
+  public static final int ALREADY_CLICKED = -2;
+  public static final int CANNOT_CLICK = -1;
   public static final int NOTHING = 0;
   public static final int MINE = 1;
 
@@ -83,14 +84,17 @@ public class Cell {
    * Clicks this cell then returns the result for this action.
    * 
    * @param mines the number of mine around this cell
-   * @return one of those values: {@code ALREADY_CLICKED}, {@code NOTHING}, {@code MINE}
+   * @return one of those values: {@code ALREADY_CLICKED}, {@code CANNOT_CLICK}, {@code NOTHING},
+   *         {@code MINE}
    */
   public int click(int mines) {
     if (mines < 0 || mines > 9)
       throw new IllegalArgumentException("mines number should be inside [0, 8], given " + mines);
 
-    if (this.clicked || this.flagged)
+    if (this.clicked)
       return ALREADY_CLICKED;
+    if (this.flagged)
+      return CANNOT_CLICK;
 
     this.clicked = true;
     if (this.mine) {

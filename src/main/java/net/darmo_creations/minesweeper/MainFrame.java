@@ -97,6 +97,7 @@ public class MainFrame extends ApplicationFrame<MainController> {
 
     this.gridPnl = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 15));
 
+    getContentPanel().setLayout(new BorderLayout());
     getContentPanel().add(infoPnl, BorderLayout.NORTH);
     getContentPanel().add(this.gridPnl, BorderLayout.CENTER);
   }
@@ -120,7 +121,7 @@ public class MainFrame extends ApplicationFrame<MainController> {
     gameMenu.add(i = new JMenuItem(I18n.getLocalizedString("item.exit.text")));
     i.setMnemonic(I18n.getLocalizedMnemonic("item.exit"));
     i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
-    i.addActionListener(e -> ApplicationRegistry.EVENTS_BUS.dispatchEvent(new UserEvent(UserEvent.DefaultType.EXIT)));
+    i.addActionListener(e -> ApplicationRegistry.EVENTS_BUS.dispatchEvent(new UserEvent(UserEvent.DefaultType.EXITING)));
 
     this.difficultyMenu = new JMenu(I18n.getLocalizedString("menu.difficulty.text"));
     this.difficultyMenu.setMnemonic(I18n.getLocalizedMnemonic("menu.difficulty"));
@@ -229,11 +230,9 @@ public class MainFrame extends ApplicationFrame<MainController> {
 
       addMouseListener(new MouseAdapter() {
         @Override
-        public void mouseClicked(MouseEvent e) {
+        public void mousePressed(MouseEvent e) {
           if (!CellLabel.this.clicked && (SwingUtilities.isLeftMouseButton(e) || SwingUtilities.isRightMouseButton(e))) {
             ApplicationRegistry.EVENTS_BUS.dispatchEvent(new CellClickedEvent(CellLabel.this, SwingUtilities.isLeftMouseButton(e)));
-            CellLabel.this.setBorder(new CompoundBorder(new LineBorder(Color.GRAY.darker(), 1), new EmptyBorder(1, 1, 1, 1)));
-            CellLabel.this.clicked = true;
           }
         }
       });
@@ -245,6 +244,11 @@ public class MainFrame extends ApplicationFrame<MainController> {
 
     public void lock() {
       this.clicked = true;
+    }
+
+    public void click() {
+      CellLabel.this.setBorder(new CompoundBorder(new LineBorder(Color.GRAY.darker(), 1), new EmptyBorder(1, 1, 1, 1)));
+      CellLabel.this.clicked = true;
     }
 
     public void setIcon(ImageIcon imageIcon) {
