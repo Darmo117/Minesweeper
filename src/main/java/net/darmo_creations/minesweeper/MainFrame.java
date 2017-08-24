@@ -177,7 +177,7 @@ public class MainFrame extends ApplicationFrame<MainController> {
    * @param mines number of mines
    */
   public void setRemainingMines(int mines) {
-    this.remainingLbl.setText(REM_TEXT + mines);
+    this.remainingLbl.setText(REM_TEXT + " " + mines);
   }
 
   /**
