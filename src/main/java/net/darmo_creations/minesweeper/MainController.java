@@ -111,14 +111,14 @@ public class MainController extends ApplicationController<MainFrame> {
     if (!this.started) {
       startGame(p);
     }
-  
+
     Cell cell = this.grid[p.y][p.x];
     CellLabel label = e.getCell();
-  
+
     if (e.isMainClick() && !cell.isFlagged()) {
       clickCell(cell, label);
     }
-    else {
+    else if (!e.isMainClick()) {
       if (cell.isFlagged()) {
         cell.setMarked(true);
         label.setIcon(Images.MARK);
@@ -144,7 +144,7 @@ public class MainController extends ApplicationController<MainFrame> {
     Point p = label.getCoordinates();
     int nearbyMines = getNearbyMinesNumber(p.y, p.x);
     int res = cell.click(nearbyMines);
-  
+
     switch (res) {
       case Cell.NOTHING:
         label.click();
@@ -174,13 +174,13 @@ public class MainController extends ApplicationController<MainFrame> {
    */
   private void exploreGrid(int row, int col, boolean ignoreClicked) {
     Cell cell = this.grid[row][col];
-  
+
     if ((!ignoreClicked && cell.isClicked()) || cell.isFlagged())
       return;
-  
+
     if (!ignoreClicked)
       clickCell(cell, this.frame.getCell(new Point(col, row)));
-  
+
     if (getNearbyMinesNumber(row, col) == 0) {
       if (row > 0)
         exploreGrid(row - 1, col, false);
@@ -207,9 +207,9 @@ public class MainController extends ApplicationController<MainFrame> {
   private boolean checkVictory() {
     if (!this.started)
       return false;
-  
+
     boolean win = true;
-  
+
     loop: for (int row = 0; row < this.difficulty.getRows(); row++) {
       for (int col = 0; col < this.difficulty.getColumns(); col++) {
         if (!this.grid[row][col].isClicked() && !this.grid[row][col].isMine()) {
@@ -218,7 +218,7 @@ public class MainController extends ApplicationController<MainFrame> {
         }
       }
     }
-  
+
     return win;
   }
 
