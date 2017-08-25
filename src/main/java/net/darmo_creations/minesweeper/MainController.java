@@ -299,7 +299,7 @@ public class MainController extends ApplicationController<MainFrame> {
         if (cell.isMine()) {
           label.setIcon(Images.MINE);
         }
-        else if (!cell.isMine() && cell.isMarked()) {
+        else if (!cell.isMine() && cell.isFlagged()) {
           label.setIcon(Images.WRONG_MINE);
         }
       }
