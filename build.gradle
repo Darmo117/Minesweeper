@@ -42,10 +42,8 @@ repositories {
 dependencies {
   // The production code uses the SLF4J logging API at compile time
   compile 'org.slf4j:slf4j-api:1.7.21'
-  // Darmo Utils
-  compile files('libs/Darmo Utils-1.0.jar')
   // GUI-Framework
-  compile files('libs/GUI-Framework-1.0.jar')
+  compile files('libs/GUI-Framework-1.3.jar')
   // JUnit
   testCompile 'junit:junit:4.12'
 }
