@@ -66,7 +66,7 @@ public class MainFrame extends ApplicationFrame<MainController> {
   private static final String REM_TEXT = I18n.getLocalizedString("label.mines.text");
 
   private JMenu difficultyMenu;
-  private JCheckBoxMenuItem modeItem;
+  private JCheckBoxMenuItem bigButtonsItem;
   private JLabel remainingLbl, timeLbl;
   private JPanel gridPnl;
 
@@ -115,9 +115,9 @@ public class MainFrame extends ApplicationFrame<MainController> {
     i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
     i.addActionListener(e -> ApplicationRegistry.EVENTS_BUS.dispatchEvent(new UserEvent(EventType.NEW_GAME)));
     gameMenu.add(
-        this.modeItem = new JCheckBoxMenuItem(I18n.getLocalizedString("item.tablet_mode.text"), config.getValue(ConfigTags.TABLET_MODE)));
-    this.modeItem.setMnemonic(I18n.getLocalizedMnemonic("item.tablet_mode"));
-    this.modeItem.addActionListener(e -> ApplicationRegistry.EVENTS_BUS.dispatchEvent(new UserEvent(EventType.TOGGLE_TABLET_MODE)));
+        this.bigButtonsItem = new JCheckBoxMenuItem(I18n.getLocalizedString("item.big_buttons.text"), config.getValue(ConfigTags.BIG_BUTTONS)));
+    this.bigButtonsItem.setMnemonic(I18n.getLocalizedMnemonic("item.big_buttons"));
+    this.bigButtonsItem.addActionListener(e -> ApplicationRegistry.EVENTS_BUS.dispatchEvent(new UserEvent(EventType.TOGGLE_TABLET_MODE)));
     gameMenu.add(i = new JMenuItem(I18n.getLocalizedString("item.exit.text")));
     i.setMnemonic(I18n.getLocalizedMnemonic("item.exit"));
     i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
@@ -140,7 +140,7 @@ public class MainFrame extends ApplicationFrame<MainController> {
   }
 
   public void updateMenus(boolean gameRunning) {
-    this.modeItem.setEnabled(!gameRunning);
+    this.bigButtonsItem.setEnabled(!gameRunning);
     this.difficultyMenu.setEnabled(!gameRunning);
   }
 

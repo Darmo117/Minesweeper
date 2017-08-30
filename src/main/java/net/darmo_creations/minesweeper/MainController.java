@@ -45,11 +45,11 @@ public class MainController extends ApplicationController<MainFrame> {
   private Difficulty difficulty;
   private boolean started;
   private boolean finished;
-  /** Number of used flags */
+  /** Number of remaining flags */
   private int flags;
   private Timer timer;
 
-  private boolean tabletMode;
+  private boolean bigButtons;
 
   public MainController(MainFrame frame, WritableConfig config) {
     super(frame, config);
@@ -58,7 +58,7 @@ public class MainController extends ApplicationController<MainFrame> {
   @Override
   public void init() {
     super.init();
-    this.tabletMode = this.config.getValue(ConfigTags.TABLET_MODE);
+    this.bigButtons = this.config.getValue(ConfigTags.BIG_BUTTONS);
     setGameDifficulty(Difficulty.EASY);
     resetGame();
   }
@@ -79,16 +79,16 @@ public class MainController extends ApplicationController<MainFrame> {
             resetGame();
             break;
           case TOGGLE_TABLET_MODE:
-            toggleTabletMode();
+            toggleBigButtons();
             break;
         }
       }
     }
   }
 
-  private void toggleTabletMode() {
-    this.tabletMode = !this.tabletMode;
-    this.config.setValue(ConfigTags.TABLET_MODE, this.tabletMode);
+  private void toggleBigButtons() {
+    this.bigButtons = !this.bigButtons;
+    this.config.setValue(ConfigTags.BIG_BUTTONS, this.bigButtons);
     resetGame();
   }
 
@@ -244,7 +244,7 @@ public class MainController extends ApplicationController<MainFrame> {
       }
     }
 
-    this.frame.resetGrid(new Dimension(this.difficulty.getColumns(), this.difficulty.getRows()), this.tabletMode);
+    this.frame.resetGrid(new Dimension(this.difficulty.getColumns(), this.difficulty.getRows()), this.bigButtons);
     this.frame.setRemainingMines(this.flags);
     this.frame.setTimer(0, 0, 0);
     this.frame.updateMenus(false);
