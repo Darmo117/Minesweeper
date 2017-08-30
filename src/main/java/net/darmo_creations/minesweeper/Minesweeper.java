@@ -27,7 +27,7 @@ import net.darmo_creations.gui_framework.config.WritableConfig;
 import net.darmo_creations.utils.version.Version;
 
 public class Minesweeper implements Application {
-  public static final Version CURRENT_VERSION = new Version(1, 0, 0, true);
+  public static final Version CURRENT_VERSION = new Version(1, 0, 0, false);
 
   @Override
   public String getName() {
@@ -41,7 +41,7 @@ public class Minesweeper implements Application {
 
   @Override
   public void preInit() {
-    WritableConfig.registerTag(ConfigTags.TABLET_MODE, false);
+    WritableConfig.registerTag(ConfigTags.BIG_BUTTONS, false);
   }
 
   @Override
