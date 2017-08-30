@@ -27,7 +27,7 @@ import net.darmo_creations.gui_framework.config.WritableConfig;
 import net.darmo_creations.utils.version.Version;
 
 public class Minesweeper implements Application {
-  public static final Version CURRENT_VERSION = new Version(1, 0, 1, false);
+  public static final Version CURRENT_VERSION = new Version(1, 1, 0, true);
 
   @Override
   public String getName() {
