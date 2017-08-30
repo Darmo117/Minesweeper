@@ -191,9 +191,8 @@ public class MainFrame extends ApplicationFrame<MainController> {
     this.timeLbl.setText((h != 0 ? addLeadingZero(h) + ":" : "") + addLeadingZero(m) + ":" + addLeadingZero(s));
   }
 
-  // TODO use String.format
   private String addLeadingZero(int v) {
-    return v >= 0 && v < 10 ? "0" + v : "" + v;
+    return String.format("%02d", v);
   }
 
   /**
