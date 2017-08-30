@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 
 import net.darmo_creations.gui_framework.ApplicationRegistry;
+import net.darmo_creations.gui_framework.GuiFramework;
 import net.darmo_creations.gui_framework.config.Language;
 
 public class Start {
@@ -33,7 +34,7 @@ public class Start {
     l.add(new Language("Esperanto", new Locale("eo")));
 
     ApplicationRegistry.setLanguages(l);
-    ApplicationRegistry.registerApplication(new Minesweeper());
-    net.darmo_creations.gui_framework.Start.run();
+    ApplicationRegistry.registerApplication(Minesweeper.class);
+    GuiFramework.run();
   }
 }
