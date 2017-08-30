@@ -25,7 +25,6 @@ import java.util.Random;
 
 import javax.swing.JOptionPane;
 
-import net.darmo_creations.gui_framework.ApplicationRegistry;
 import net.darmo_creations.gui_framework.config.WritableConfig;
 import net.darmo_creations.gui_framework.controllers.ApplicationController;
 import net.darmo_creations.gui_framework.events.UserEvent;
@@ -100,7 +99,7 @@ public class MainController extends ApplicationController<MainFrame> {
   private void setGameDifficulty(Difficulty difficulty) {
     if (!this.started || this.finished) {
       this.difficulty = difficulty;
-      this.frame.setTitle(ApplicationRegistry.getApplication().getName() + " - " + difficulty.getName());
+      this.frame.setTitle(this.frame.getBaseTitle() + " - " + difficulty.getName());
       resetGame();
     }
   }
