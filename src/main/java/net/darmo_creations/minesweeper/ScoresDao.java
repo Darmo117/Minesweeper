@@ -43,6 +43,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import net.darmo_creations.minesweeper.model.Difficulty;
+import net.darmo_creations.minesweeper.model.Score;
 import net.darmo_creations.utils.JarUtil;
 
 /**
@@ -67,8 +68,8 @@ public class ScoresDao {
    * 
    * @return the scores
    */
-  public Map<Difficulty, Duration[]> load() {
-    Map<Difficulty, Duration[]> scores = new HashMap<>();
+  public Map<Difficulty, Score[]> load() {
+    Map<Difficulty, Score[]> scores = new HashMap<>();
 
     try {
       File fXmlFile = new File(URLDecoder.decode(JarUtil.getJarDir() + "scores.xml", "UTF-8"));
@@ -86,16 +87,18 @@ public class ScoresDao {
           Element difficultyElement = ((Element) difficultiesList.item(i));
           NodeList timesList = difficultyElement.getElementsByTagName("Time");
           Difficulty difficulty = Difficulty.valueOf(difficultyElement.getAttribute("name").toUpperCase());
-          List<Duration> durations = new ArrayList<>();
+          List<Score> scoresList = new ArrayList<>();
 
           for (int j = 0; j < timesList.getLength(); j++) {
             Element timeElement = (Element) timesList.item(j);
             try {
-              durations.add(Duration.ofSeconds(Long.parseLong(timeElement.getTextContent())));
+              Duration duration = Duration.ofSeconds(Long.parseLong(timeElement.getTextContent()));
+              Score score = new Score(timeElement.getAttribute("username"), duration);
+              scoresList.add(score);
             }
             catch (NumberFormatException ex) {}
           }
-          scores.put(difficulty, durations.stream().toArray(Duration[]::new));
+          scores.put(difficulty, scoresList.stream().toArray(Score[]::new));
         }
       }
     }
@@ -109,7 +112,7 @@ public class ScoresDao {
    * 
    * @param scores the scores
    */
-  public void save(Map<Difficulty, Duration[]> scores) {
+  public void save(Map<Difficulty, Score[]> scores) {
     try {
       DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
       DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -117,16 +120,17 @@ public class ScoresDao {
 
       Element root = doc.createElement("Scores");
 
-      for (Map.Entry<Difficulty, Duration[]> entry : scores.entrySet()) {
-        Element difficulty = doc.createElement("Difficulty");
-        difficulty.setAttribute("name", entry.getKey().name().toLowerCase());
-        for (Duration duration : entry.getValue()) {
-          Element time = doc.createElement("Time");
+      for (Map.Entry<Difficulty, Score[]> entry : scores.entrySet()) {
+        Element difficultyElement = doc.createElement("Difficulty");
+        difficultyElement.setAttribute("name", entry.getKey().name().toLowerCase());
+        for (Score score : entry.getValue()) {
+          Element scoreElement = doc.createElement("Score");
 
-          time.setTextContent("" + duration.getSeconds());
-          difficulty.appendChild(time);
+          scoreElement.setAttribute("username", score.getUsername());
+          scoreElement.setTextContent("" + score.getDuration().getSeconds());
+          difficultyElement.appendChild(scoreElement);
         }
-        root.appendChild(difficulty);
+        root.appendChild(difficultyElement);
       }
 
       doc.appendChild(root);
