@@ -19,15 +19,36 @@
 package net.darmo_creations.minesweeper;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import net.darmo_creations.gui_framework.Application;
+import net.darmo_creations.gui_framework.ApplicationRegistry;
 import net.darmo_creations.gui_framework.config.Language;
 import net.darmo_creations.gui_framework.config.WritableConfig;
 import net.darmo_creations.utils.version.Version;
 
 public class Minesweeper implements Application {
   public static final Version CURRENT_VERSION = new Version(1, 1, 0, true);
+
+  @Override
+  public void preInit() {
+    List<Language> l = new ArrayList<>();
+    l.add(new Language("English", Locale.US));
+    l.add(new Language("Français", Locale.FRANCE));
+    l.add(new Language("Esperanto", new Locale("eo")));
+
+    ApplicationRegistry.setLanguages(l);
+
+    WritableConfig.registerTag(ConfigTags.BIG_BUTTONS, false);
+  }
+
+  @Override
+  public MainFrame initFrame(WritableConfig config) {
+    return new MainFrame(config);
+  }
 
   @Override
   public String getName() {
@@ -40,16 +61,6 @@ public class Minesweeper implements Application {
   }
 
   @Override
-  public void preInit() {
-    WritableConfig.registerTag(ConfigTags.BIG_BUTTONS, false);
-  }
-
-  @Override
-  public MainFrame initFrame(WritableConfig config) {
-    return new MainFrame(config);
-  }
-
-  @Override
   public Optional<String> getIcon() {
     return Optional.of("/assets/icons/icon.png");
   }
@@ -57,11 +68,6 @@ public class Minesweeper implements Application {
   @Override
   public Optional<String> getLicenseIcon() {
     return Optional.of("/assets/icons/gplv3-127x51.png");
-  }
-
-  @Override
-  public String getIconsLocation() {
-    return "/assets/icons/";
   }
 
   @Override
