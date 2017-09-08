@@ -21,24 +21,35 @@ package net.darmo_creations.minesweeper;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.TreeMap;
 
 import javax.swing.JOptionPane;
 
 import net.darmo_creations.gui_framework.config.WritableConfig;
 import net.darmo_creations.gui_framework.controllers.ApplicationController;
 import net.darmo_creations.gui_framework.events.UserEvent;
-import net.darmo_creations.minesweeper.MainFrame.CellLabel;
 import net.darmo_creations.minesweeper.events.CellClickedEvent;
 import net.darmo_creations.minesweeper.events.ChangeDifficultyEvent;
 import net.darmo_creations.minesweeper.events.EventType;
 import net.darmo_creations.minesweeper.events.TimerEvent;
+import net.darmo_creations.minesweeper.gui.MainFrame;
+import net.darmo_creations.minesweeper.gui.MainFrame.CellLabel;
 import net.darmo_creations.minesweeper.model.Cell;
 import net.darmo_creations.minesweeper.model.Difficulty;
+import net.darmo_creations.minesweeper.model.Score;
 import net.darmo_creations.minesweeper.model.Timer;
 import net.darmo_creations.utils.I18n;
 import net.darmo_creations.utils.events.SubsribeEvent;
 
+/**
+ * Application's controller.
+ *
+ * @author Damien Vergnet
+ */
 public class MainController extends ApplicationController<MainFrame> {
   private Cell[][] grid;
   private Difficulty difficulty;
@@ -47,6 +58,7 @@ public class MainController extends ApplicationController<MainFrame> {
   /** Number of remaining flags */
   private int flags;
   private Timer timer;
+  private Map<Difficulty, List<Score>> scores;
 
   private boolean bigButtons;
 
@@ -58,6 +70,8 @@ public class MainController extends ApplicationController<MainFrame> {
   public void init() {
     super.init();
     this.bigButtons = this.config.getValue(ConfigTags.BIG_BUTTONS);
+    this.scores = new TreeMap<>(ScoresDao.getInstance().load());
+    sortScores(null);
     setGameDifficulty(Difficulty.EASY);
     resetGame();
   }
@@ -69,6 +83,7 @@ public class MainController extends ApplicationController<MainFrame> {
 
     if (e.getType() == UserEvent.DefaultType.EXITING && !e.isCanceled()) {
       this.timer.interrupt();
+      ScoresDao.getInstance().save(this.scores);
     }
     else {
       UserEvent.Type type = e.getType();
@@ -80,8 +95,27 @@ public class MainController extends ApplicationController<MainFrame> {
           case TOGGLE_TABLET_MODE:
             toggleBigButtons();
             break;
+          case SHOW_SCORES:
+            this.frame.showScoresDialog(this.scores);
+            break;
         }
       }
+    }
+  }
+
+  /**
+   * Sorts the scores for the given difficulty. If the parameter is null, all scores will be sorted.
+   * 
+   * @param difficultyToSort the difficulty scores to sort
+   */
+  private void sortScores(Difficulty difficultyToSort) {
+    if (difficultyToSort == null) {
+      for (List<Score> s : this.scores.values()) {
+        Collections.sort(s);
+      }
+    }
+    else {
+      Collections.sort(this.scores.get(difficultyToSort));
     }
   }
 

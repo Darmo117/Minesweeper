@@ -28,6 +28,7 @@ import net.darmo_creations.gui_framework.Application;
 import net.darmo_creations.gui_framework.ApplicationRegistry;
 import net.darmo_creations.gui_framework.config.Language;
 import net.darmo_creations.gui_framework.config.WritableConfig;
+import net.darmo_creations.minesweeper.gui.MainFrame;
 import net.darmo_creations.utils.version.Version;
 
 public class Minesweeper implements Application {

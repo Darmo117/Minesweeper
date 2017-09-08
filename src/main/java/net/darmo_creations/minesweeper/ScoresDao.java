@@ -68,8 +68,8 @@ public class ScoresDao {
    * 
    * @return the scores
    */
-  public Map<Difficulty, Score[]> load() {
-    Map<Difficulty, Score[]> scores = new HashMap<>();
+  public Map<Difficulty, List<Score>> load() {
+    Map<Difficulty, List<Score>> scores = new HashMap<>();
 
     try {
       File fXmlFile = new File(URLDecoder.decode(JarUtil.getJarDir() + "scores.xml", "UTF-8"));
@@ -85,7 +85,7 @@ public class ScoresDao {
 
         for (int i = 0; i < difficultiesList.getLength(); i++) {
           Element difficultyElement = ((Element) difficultiesList.item(i));
-          NodeList timesList = difficultyElement.getElementsByTagName("Time");
+          NodeList timesList = difficultyElement.getElementsByTagName("Score");
           Difficulty difficulty = Difficulty.valueOf(difficultyElement.getAttribute("name").toUpperCase());
           List<Score> scoresList = new ArrayList<>();
 
@@ -98,7 +98,7 @@ public class ScoresDao {
             }
             catch (NumberFormatException ex) {}
           }
-          scores.put(difficulty, scoresList.stream().toArray(Score[]::new));
+          scores.put(difficulty, scoresList);
         }
       }
     }
@@ -112,7 +112,7 @@ public class ScoresDao {
    * 
    * @param scores the scores
    */
-  public void save(Map<Difficulty, Score[]> scores) {
+  public void save(Map<Difficulty, List<Score>> scores) {
     try {
       DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
       DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -120,7 +120,7 @@ public class ScoresDao {
 
       Element root = doc.createElement("Scores");
 
-      for (Map.Entry<Difficulty, Score[]> entry : scores.entrySet()) {
+      for (Map.Entry<Difficulty, List<Score>> entry : scores.entrySet()) {
         Element difficultyElement = doc.createElement("Difficulty");
         difficultyElement.setAttribute("name", entry.getKey().name().toLowerCase());
         for (Score score : entry.getValue()) {

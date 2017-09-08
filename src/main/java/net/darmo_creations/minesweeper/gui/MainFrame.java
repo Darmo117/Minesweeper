@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.darmo_creations.minesweeper;
+package net.darmo_creations.minesweeper.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -32,6 +32,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.ButtonGroup;
@@ -54,16 +55,22 @@ import net.darmo_creations.gui_framework.ApplicationRegistry;
 import net.darmo_creations.gui_framework.config.WritableConfig;
 import net.darmo_creations.gui_framework.events.UserEvent;
 import net.darmo_creations.gui_framework.gui.ApplicationFrame;
+import net.darmo_creations.minesweeper.ConfigTags;
+import net.darmo_creations.minesweeper.Images;
+import net.darmo_creations.minesweeper.MainController;
 import net.darmo_creations.minesweeper.events.CellClickedEvent;
 import net.darmo_creations.minesweeper.events.ChangeDifficultyEvent;
 import net.darmo_creations.minesweeper.events.EventType;
 import net.darmo_creations.minesweeper.model.Difficulty;
+import net.darmo_creations.minesweeper.model.Score;
 import net.darmo_creations.utils.I18n;
 
 public class MainFrame extends ApplicationFrame<MainController> {
   private static final long serialVersionUID = 5041068026834586876L;
 
   private static final String REM_TEXT = I18n.getLocalizedString("label.mines.text");
+
+  private ScoresDialog scoresDialog;
 
   private JMenu difficultyMenu;
   private JCheckBoxMenuItem bigButtonsItem;
@@ -72,6 +79,7 @@ public class MainFrame extends ApplicationFrame<MainController> {
 
   public MainFrame(WritableConfig config) {
     super(config, true, false, true, false, null, false);
+    this.scoresDialog = new ScoresDialog(this);
     centerFrame();
   }
 
@@ -114,8 +122,11 @@ public class MainFrame extends ApplicationFrame<MainController> {
     i.setMnemonic(I18n.getLocalizedMnemonic("item.new_game"));
     i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
     i.addActionListener(e -> ApplicationRegistry.EVENTS_BUS.dispatchEvent(new UserEvent(EventType.NEW_GAME)));
-    gameMenu.add(
-        this.bigButtonsItem = new JCheckBoxMenuItem(I18n.getLocalizedString("item.big_buttons.text"), config.getValue(ConfigTags.BIG_BUTTONS)));
+    gameMenu.add(i = new JMenuItem(I18n.getLocalizedString("item.scores.text")));
+    i.setMnemonic(I18n.getLocalizedMnemonic("item.scores"));
+    i.addActionListener(e -> ApplicationRegistry.EVENTS_BUS.dispatchEvent(new UserEvent(EventType.SHOW_SCORES)));
+    gameMenu.add(this.bigButtonsItem = new JCheckBoxMenuItem(I18n.getLocalizedString("item.big_buttons.text"),
+        config.getValue(ConfigTags.BIG_BUTTONS)));
     this.bigButtonsItem.setMnemonic(I18n.getLocalizedMnemonic("item.big_buttons"));
     this.bigButtonsItem.addActionListener(e -> ApplicationRegistry.EVENTS_BUS.dispatchEvent(new UserEvent(EventType.TOGGLE_TABLET_MODE)));
     gameMenu.add(i = new JMenuItem(I18n.getLocalizedString("item.exit.text")));
@@ -201,6 +212,16 @@ public class MainFrame extends ApplicationFrame<MainController> {
   public void centerFrame() {
     Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
     setLocation(dim.width / 2 - getPreferredSize().width / 2, dim.height / 2 - getPreferredSize().height / 2);
+  }
+
+  /**
+   * Displays the scores dialog.
+   * 
+   * @param scores the scores
+   */
+  public void showScoresDialog(final Map<Difficulty, List<Score>> scores) {
+    this.scoresDialog.setScores(scores);
+    this.scoresDialog.setVisible(true);
   }
 
   public final class CellLabel extends JLabel {

@@ -18,7 +18,7 @@
  */
 package net.darmo_creations.minesweeper.events;
 
-import net.darmo_creations.minesweeper.MainFrame.CellLabel;
+import net.darmo_creations.minesweeper.gui.MainFrame.CellLabel;
 import net.darmo_creations.utils.events.AbstractEvent;
 
 /**

@@ -25,7 +25,7 @@ import java.time.Duration;
  *
  * @author Damien Vergnet
  */
-public final class Score {
+public final class Score implements Comparable<Score> {
   private final String username;
   private final Duration duration;
 
@@ -40,5 +40,15 @@ public final class Score {
 
   public Duration getDuration() {
     return this.duration;
+  }
+
+  @Override
+  public int compareTo(Score otherScore) {
+    return this.duration.compareTo(otherScore.getDuration());
+  }
+
+  @Override
+  public String toString() {
+    return this.username + "=" + this.duration;
   }
 }
