@@ -1,3 +1,4 @@
+dialog.scores.title=Meilleurs scores
 dialog.about.title=À propos
 dialog.update.title=Mise à jour disponible
 
@@ -8,6 +9,7 @@ popup.victory.title=Victoire !
 popup.victory.text=Vous avez gagné !
 popup.game_over.title=Perdu !
 popup.game_over.text=Vous avez perdu !
+popup.enter_name.text=Veuillez entrer un nom :
 popup.play_again.text=Voulez-vous rejouer ?
 popup.change_language.confirm.text=L'application va devoir redémarrer après changement de la langue. Voulez-vous continuer?
 popup.change_language.restart_error.text=Impossible de redémarrer l'application.
@@ -16,6 +18,8 @@ menu.game.text=Partie
 menu.game.mnemonic=p
 item.new_game.text=Nouvelle partie
 item.new_game.mnemonic=n
+item.scores.text=Meilleurs scores…
+item.scores.mnemonic=m
 item.big_buttons.text=Grand boutons
 item.big_buttons.mnemonic=t
 item.exit.text=Quitter
