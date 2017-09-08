@@ -21,6 +21,7 @@ package net.darmo_creations.minesweeper;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +59,7 @@ public class MainController extends ApplicationController<MainFrame> {
   /** Number of remaining flags */
   private int flags;
   private Timer timer;
+  private int lastTime;
   private Map<Difficulty, List<Score>> scores;
 
   private boolean bigButtons;
@@ -72,6 +74,7 @@ public class MainController extends ApplicationController<MainFrame> {
     this.bigButtons = this.config.getValue(ConfigTags.BIG_BUTTONS);
     this.scores = new TreeMap<>(ScoresDao.getInstance().load());
     sortScores(null);
+    this.lastTime = 0;
     setGameDifficulty(Difficulty.EASY);
     resetGame();
   }
@@ -257,6 +260,7 @@ public class MainController extends ApplicationController<MainFrame> {
 
   @SubsribeEvent
   public void onTimerEvent(TimerEvent e) {
+    this.lastTime = e.getHours() * 3600 + e.getMinutes() * 60 + e.getSeconds();
     this.frame.setTimer(e.getHours(), e.getMinutes(), e.getSeconds());
   }
 
@@ -317,8 +321,7 @@ public class MainController extends ApplicationController<MainFrame> {
    */
   private void endGame(boolean victory) {
     String title = victory ? I18n.getLocalizedString("popup.victory.title") : I18n.getLocalizedString("popup.game_over.title");
-    String msg = (victory ? I18n.getLocalizedString("popup.victory.text") : I18n.getLocalizedString("popup.game_over.text")) + "\n"
-        + I18n.getLocalizedString("popup.play_again.text");
+    String msg = (victory ? I18n.getLocalizedString("popup.victory.text") : I18n.getLocalizedString("popup.game_over.text"));
 
     this.finished = true;
     this.timer.interrupt();
@@ -339,7 +342,17 @@ public class MainController extends ApplicationController<MainFrame> {
     }
     this.frame.updateMenus(false);
 
-    int choice = JOptionPane.showConfirmDialog(this.frame, msg, title, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+    if (victory) {
+      msg += "\n" + I18n.getLocalizedString("popup.enter_name.text");
+      String name = JOptionPane.showInputDialog(this.frame, msg, title, JOptionPane.QUESTION_MESSAGE);
+      this.scores.get(this.difficulty).add(new Score(name, Duration.ofSeconds(this.lastTime)));
+    }
+    else {
+      JOptionPane.showMessageDialog(this.frame, msg, title, JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    int choice = JOptionPane.showConfirmDialog(this.frame, I18n.getLocalizedString("popup.play_again.text"), title,
+        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
     if (choice == JOptionPane.YES_OPTION)
       resetGame();
   }
