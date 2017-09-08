@@ -19,12 +19,13 @@
 package net.darmo_creations.minesweeper.gui;
 
 import java.awt.BorderLayout;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
@@ -42,7 +43,8 @@ import net.darmo_creations.utils.swing.dialog.DefaultDialogController;
 public class ScoresDialog extends AbstractDialog {
   private static final long serialVersionUID = -1996609441443859066L;
 
-  private JTable scoresTbl;
+  private JTabbedPane scoresTbl;
+  private Map<Difficulty, JTable> tabs;
 
   public ScoresDialog(JFrame owner) {
     super(owner, Mode.CLOSE_OPTION, true);
@@ -50,12 +52,18 @@ public class ScoresDialog extends AbstractDialog {
     setTitle(I18n.getLocalizedString("dialog.scores.title"));
     setResizable(false);
 
-    String[] difficulties = Arrays.asList(Difficulty.values()).stream().map(d -> d.getName()).toArray(String[]::new);
-    this.scoresTbl = new JTable(new DefaultTableModel(new String[0][], difficulties));
-    this.scoresTbl.getTableHeader().setReorderingAllowed(false);
-    this.scoresTbl.setEnabled(false);
+    this.tabs = new HashMap<>();
+    this.scoresTbl = new JTabbedPane();
+    for (Difficulty difficulty : Difficulty.values()) {
+      JTable p = new JTable(new DefaultTableModel(
+          new String[]{I18n.getLocalizedString("label.username.text"), I18n.getLocalizedString("label.time.text")}, 0));
+      p.setEnabled(false);
+      p.getTableHeader().setReorderingAllowed(false);
+      this.tabs.put(difficulty, p);
+      this.scoresTbl.addTab(difficulty.getName(), new JScrollPane(p));
+    }
 
-    add(new JScrollPane(this.scoresTbl), BorderLayout.CENTER);
+    add(this.scoresTbl, BorderLayout.CENTER);
 
     setActionListener(new DefaultDialogController<>(this));
     pack();
@@ -63,34 +71,23 @@ public class ScoresDialog extends AbstractDialog {
   }
 
   public void setScores(final Map<Difficulty, List<Score>> scores) {
-    DefaultTableModel model = ((DefaultTableModel) this.scoresTbl.getModel());
+    for (Map.Entry<Difficulty, List<Score>> entry : scores.entrySet()) {
+      DefaultTableModel model = ((DefaultTableModel) this.tabs.get(entry.getKey()).getModel());
 
-    model.setRowCount(0);
-    int longestList = scores.values().stream().mapToInt(l -> l.size()).max().orElse(0);
+      entry.getValue().forEach(score -> {
+        long time = score.getDuration().getSeconds();
+        long seconds = time % 60;
+        long minutes = (time / 60) % 60;
+        long hours = time / 3600;
+        String s;
 
-    for (int i = 0; i < longestList; i++) {
-      int j = i;
-      String[] row = scores.entrySet().stream().map(e -> {
-        if (e.getValue().size() > j) {
-          Score score = e.getValue().get(j);
-          long time = score.getDuration().getSeconds();
-          long seconds = time % 60;
-          long minutes = (time / 60) % 60;
-          long hours = time / 3600;
-          String s;
+        if (hours > 0)
+          s = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        else
+          s = String.format("%02d:%02d", minutes, seconds);
 
-          if (hours > 0)
-            s = String.format("%02d:%02d:%02d", hours, minutes, seconds);
-          else
-            s = String.format("%02d:%02d", minutes, seconds);
-          s = String.format("<html><b>%s</b> %s</html>", score.getUsername(), s);
-
-          return s;
-        }
-        return "";
-      }).toArray(String[]::new);
-
-      model.addRow(row);
+        model.addRow(new String[]{score.getUsername(), s});
+      });
     }
   }
 }

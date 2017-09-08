@@ -38,6 +38,8 @@ item.about.text=À propos
 item.about.mnemonic=à
 
 label.mines.text=Mines
+label.username.text=Pseudonyme
+label.time.text=Temps
 
 label.updates_check_blocked.text=Vérification des mises à jour bloquées
 label.checking_updates.text=Vérification des mises à jour

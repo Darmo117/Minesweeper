@@ -38,6 +38,8 @@ item.about.text=About
 item.about.mnemonic=a
 
 label.mines.text=Mines
+label.username.text=Username
+label.time.text=Time
 
 label.updates_check_blocked.text=Updates check disabled
 label.checking_updates.text=Checking updates

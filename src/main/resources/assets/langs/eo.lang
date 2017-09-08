@@ -38,6 +38,8 @@ item.about.text=Pri
 item.about.mnemonic=p
 
 label.mines.text=Mino
+label.username.text=Pseŭdonomo
+label.time.text=Tempo
 
 label.updates_check_blocked.text=Kontrolo de ĝisdatigoj malaktivitita
 label.checking_updates.text=Kontrolanta ĝisdatigoj
