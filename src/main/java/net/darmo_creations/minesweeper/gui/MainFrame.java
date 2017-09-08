@@ -23,7 +23,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Point;
@@ -92,8 +91,8 @@ public class MainFrame extends ApplicationFrame<MainController> {
   protected void initContent(MainController controller, WritableConfig config) {
     this.remainingLbl = new JLabel(REM_TEXT);
     this.timeLbl = new JLabel();
-    this.remainingLbl.setFont(new Font("Tahoma", Font.PLAIN, 18));
-    this.timeLbl.setFont(new Font("Tahoma", Font.PLAIN, 18));
+    this.remainingLbl.setFont(this.remainingLbl.getFont().deriveFont(18f));
+    this.timeLbl.setFont(this.timeLbl.getFont().deriveFont(18f));
 
     JPanel infoPnl = new JPanel(new BorderLayout());
     JPanel leftPnl = new JPanel(new FlowLayout(FlowLayout.LEFT));
