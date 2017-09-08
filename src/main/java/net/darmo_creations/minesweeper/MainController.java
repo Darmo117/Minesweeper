@@ -346,6 +346,7 @@ public class MainController extends ApplicationController<MainFrame> {
       msg += "\n" + I18n.getLocalizedString("popup.enter_name.text");
       String name = JOptionPane.showInputDialog(this.frame, msg, title, JOptionPane.QUESTION_MESSAGE);
       this.scores.get(this.difficulty).add(new Score(name, Duration.ofSeconds(this.lastTime)));
+      sortScores(this.difficulty);
     }
     else {
       JOptionPane.showMessageDialog(this.frame, msg, title, JOptionPane.INFORMATION_MESSAGE);

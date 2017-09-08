@@ -19,6 +19,7 @@
 package net.darmo_creations.minesweeper.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +51,7 @@ public class ScoresDialog extends AbstractDialog {
     super(owner, Mode.CLOSE_OPTION, true);
 
     setTitle(I18n.getLocalizedString("dialog.scores.title"));
-    setResizable(false);
+    setPreferredSize(new Dimension(200, 200));
 
     this.tabs = new HashMap<>();
     this.scoresTbl = new JTabbedPane();
@@ -74,6 +75,7 @@ public class ScoresDialog extends AbstractDialog {
     for (Map.Entry<Difficulty, List<Score>> entry : scores.entrySet()) {
       DefaultTableModel model = ((DefaultTableModel) this.tabs.get(entry.getKey()).getModel());
 
+      model.setRowCount(0);
       entry.getValue().forEach(score -> {
         long time = score.getDuration().getSeconds();
         long seconds = time % 60;
