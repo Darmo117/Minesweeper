@@ -1,4 +1,5 @@
 dialog.scores.title=Meilleurs scores
+dialog.settings.title=Paramètres
 dialog.about.title=À propos
 dialog.update.title=Mise à jour disponible
 
@@ -28,8 +29,8 @@ menu.options.text=Options
 menu.options.mnemonic=o
 item.check_updates.text=Vérifier les mises à jour au démarrage
 item.check_updates.mnemonic=v
-item.big_buttons.text=Grand boutons
-item.big_buttons.mnemonic=g
+item.settings.text=Paramètres…
+item.settings.mnemonic=p
 item.send_scores.text=Envoyer les scores au serveur
 item.send_scores.mnemonic=e
 menu.lang.text=Langue
@@ -42,6 +43,7 @@ item.about.mnemonic=à
 label.mines.text=Mines
 label.username.text=Pseudonyme
 label.time.text=Temps
+label.buttons_size.text=Taille des boutons
 
 label.updates_check_blocked.text=Vérification des mises à jour bloquées
 label.checking_updates.text=Vérification des mises à jour
@@ -52,6 +54,9 @@ label.download_link.text=Lien de téléchargement :
 label.changelog.text=Changelog :
 
 button.close.text=Fermer
+button.validate.text=Valider
+button.cancel.text=Annuler
+button.default.text=Défaut
 
 difficulty.easy=Facile
 difficulty.normal=Normal

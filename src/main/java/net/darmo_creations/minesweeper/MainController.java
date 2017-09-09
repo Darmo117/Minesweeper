@@ -25,6 +25,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.TreeMap;
 
@@ -62,8 +63,6 @@ public class MainController extends ApplicationController<MainFrame> {
   private int lastTime;
   private Map<Difficulty, List<Score>> scores;
 
-  private boolean bigButtons, sendScores;
-
   public MainController(MainFrame frame, WritableConfig config) {
     super(frame, config);
   }
@@ -71,8 +70,6 @@ public class MainController extends ApplicationController<MainFrame> {
   @Override
   public void init() {
     super.init();
-    this.bigButtons = this.config.getValue(ConfigTags.BIG_BUTTONS);
-    this.sendScores = this.config.getValue(ConfigTags.SEND_SCORES);
     this.scores = new TreeMap<>(ScoresDao.getInstance().load());
     sortScores(null);
     this.lastTime = 0;
@@ -96,12 +93,11 @@ public class MainController extends ApplicationController<MainFrame> {
           case NEW_GAME:
             resetGame();
             break;
-          case TOGGLE_BIG_BUTTONS:
-            toggleBigButtons();
+          case SHOW_BUTTONS_SIZE:
+            setButtonsSize();
             break;
           case TOGGLE_SEND_SCORES:
-            this.sendScores = !this.sendScores;
-            this.config.setValue(ConfigTags.SEND_SCORES, this.sendScores);
+            this.config.setValue(ConfigTags.SEND_SCORES, !this.config.getValue(ConfigTags.SEND_SCORES));
             break;
           case SHOW_SCORES:
             this.frame.showScoresDialog(this.scores);
@@ -127,10 +123,13 @@ public class MainController extends ApplicationController<MainFrame> {
     }
   }
 
-  private void toggleBigButtons() {
-    this.bigButtons = !this.bigButtons;
-    this.config.setValue(ConfigTags.BIG_BUTTONS, this.bigButtons);
-    resetGame();
+  private void setButtonsSize() {
+    Optional<WritableConfig> opt = this.frame.showOptionsDialog(this.config);
+
+    if (opt.isPresent()) {
+      this.config.setValue(ConfigTags.BUTTONS_SIZE, opt.get().getValue(ConfigTags.BUTTONS_SIZE));
+      resetGame();
+    }
   }
 
   @SubsribeEvent
@@ -286,7 +285,8 @@ public class MainController extends ApplicationController<MainFrame> {
       }
     }
 
-    this.frame.resetGrid(new Dimension(this.difficulty.getColumns(), this.difficulty.getRows()), this.bigButtons);
+    this.frame.resetGrid(new Dimension(this.difficulty.getColumns(), this.difficulty.getRows()),
+        this.config.getValue(ConfigTags.BUTTONS_SIZE));
     this.frame.setRemainingMines(this.flags);
     this.frame.setTimer(0, 0, 0);
     this.frame.updateMenus(false);
@@ -357,7 +357,7 @@ public class MainController extends ApplicationController<MainFrame> {
 
         this.scores.get(this.difficulty).add(score);
         sortScores(this.difficulty);
-        if (this.sendScores)
+        if (this.config.getValue(ConfigTags.SEND_SCORES))
           ScoresDao.getInstance().sendScore(score, this.difficulty);
       }
       choice = JOptionPane.showConfirmDialog(this.frame, I18n.getLocalizedString("popup.play_again.text"), title, JOptionPane.YES_NO_OPTION,

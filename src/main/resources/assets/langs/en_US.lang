@@ -1,4 +1,5 @@
 dialog.scores.title=Highscores
+dialog.settings.title=Settings
 dialog.about.title=About
 dialog.update.title=Update Available
 
@@ -28,10 +29,10 @@ menu.options.text=Options
 menu.options.mnemonic=o
 item.check_updates.text=Check for updates on startup
 item.check_updates.mnemonic=u
-item.big_buttons.text=Big Buttons
-item.big_buttons.mnemonic=b
+item.settings.text=Settings…
+item.settings.mnemonic=s
 item.send_scores.text=Send scores to server
-item.send_scores.mnemonic=s
+item.send_scores.mnemonic=e
 menu.lang.text=Language
 menu.lang.mnemonic=l
 menu.help.text=Help
@@ -42,6 +43,7 @@ item.about.mnemonic=a
 label.mines.text=Mines
 label.username.text=Username
 label.time.text=Time
+label.buttons_size.text=Buttons' size
 
 label.updates_check_blocked.text=Updates check disabled
 label.checking_updates.text=Checking updates
@@ -52,6 +54,9 @@ label.download_link.text=Download link:
 label.changelog.text=Changelog:
 
 button.close.text=Close
+button.validate.text=Validate
+button.cancel.text=Cancel
+button.default.text=Default
 
 difficulty.easy=Easy
 difficulty.normal=Normal

@@ -1,4 +1,5 @@
 dialog.scores.title=Plej bonaj poentaroj
+dialog.settings.title=Agordoj
 dialog.about.title=Pri
 dialog.update.title=Ĝisdatigo havebla
 
@@ -28,8 +29,8 @@ menu.options.text=Opcioj
 menu.options.mnemonic=o
 item.check_updates.text=Kontroli ĝisdatigoj al la programoinicio
 item.check_updates.mnemonic=k
-item.big_buttons.text=Grandaj butonoj
-item.big_buttons.mnemonic=g
+item.settings.text=Agordoj…
+item.settings.mnemonic=b
 item.send_scores.text=Sendi poentaroj al la servilo
 item.send_scores.mnemonic=s
 menu.lang.text=Lingvo
@@ -42,6 +43,7 @@ item.about.mnemonic=p
 label.mines.text=Mino
 label.username.text=Pseŭdonomo
 label.time.text=Tempo
+label.buttons_size.text=Dimensioj de la butonoj
 
 label.updates_check_blocked.text=Kontrolo de ĝisdatigoj malaktivitita
 label.checking_updates.text=Kontrolanta ĝisdatigoj
@@ -52,6 +54,9 @@ label.download_link.text=Elŝutu tien:
 label.changelog.text=Changelog:
 
 button.close.text=Fermi
+button.validate.text=Validigi
+button.cancel.text=Nuligi
+button.default.text=Defaŭlta
 
 difficulty.easy=Facila
 difficulty.normal=Normala

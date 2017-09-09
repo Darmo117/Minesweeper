@@ -19,10 +19,11 @@
 package net.darmo_creations.minesweeper;
 
 import net.darmo_creations.gui_framework.config.tags.BooleanTag;
+import net.darmo_creations.gui_framework.config.tags.IntegerTag;
 
 public final class ConfigTags {
-  public static final BooleanTag BIG_BUTTONS = new BooleanTag("big_buttons");
   public static final BooleanTag SEND_SCORES = new BooleanTag("send_scores");
+  public static final IntegerTag BUTTONS_SIZE = new IntegerTag("buttons_size");
 
   private ConfigTags() {}
 }

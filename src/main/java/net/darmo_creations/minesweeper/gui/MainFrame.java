@@ -33,6 +33,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
@@ -60,6 +61,7 @@ import net.darmo_creations.minesweeper.MainController;
 import net.darmo_creations.minesweeper.events.CellClickedEvent;
 import net.darmo_creations.minesweeper.events.ChangeDifficultyEvent;
 import net.darmo_creations.minesweeper.events.EventType;
+import net.darmo_creations.minesweeper.gui.options_dialog.SettingsDialog;
 import net.darmo_creations.minesweeper.model.Difficulty;
 import net.darmo_creations.minesweeper.model.Score;
 import net.darmo_creations.utils.I18n;
@@ -70,15 +72,18 @@ public class MainFrame extends ApplicationFrame<MainController> {
   private static final String REM_TEXT = I18n.getLocalizedString("label.mines.text");
 
   private ScoresDialog scoresDialog;
+  private SettingsDialog optionsDialog;
 
   private JMenu difficultyMenu;
-  private JCheckBoxMenuItem bigButtonsItem, sendScoresItem;
+  private JMenuItem bigButtonsItem;
+  private JCheckBoxMenuItem sendScoresItem;
   private JLabel remainingLbl, timeLbl;
   private JPanel gridPnl;
 
   public MainFrame(WritableConfig config) {
     super(config, true, false, true, false, null, false);
     this.scoresDialog = new ScoresDialog(this);
+    this.optionsDialog = new SettingsDialog(this);
     centerFrame();
   }
 
@@ -143,10 +148,9 @@ public class MainFrame extends ApplicationFrame<MainController> {
     menubar.add(this.difficultyMenu, 1);
 
     JMenu optionsMenu = menubar.getMenu(2);
-    optionsMenu.add(this.bigButtonsItem = new JCheckBoxMenuItem(I18n.getLocalizedString("item.big_buttons.text"),
-        config.getValue(ConfigTags.BIG_BUTTONS)), 1);
-    this.bigButtonsItem.setMnemonic(I18n.getLocalizedMnemonic("item.big_buttons"));
-    this.bigButtonsItem.addActionListener(e -> ApplicationRegistry.EVENTS_BUS.dispatchEvent(new UserEvent(EventType.TOGGLE_BIG_BUTTONS)));
+    optionsMenu.add(this.bigButtonsItem = new JMenuItem(I18n.getLocalizedString("item.settings.text")), 1);
+    this.bigButtonsItem.setMnemonic(I18n.getLocalizedMnemonic("item.settings"));
+    this.bigButtonsItem.addActionListener(e -> ApplicationRegistry.EVENTS_BUS.dispatchEvent(new UserEvent(EventType.SHOW_BUTTONS_SIZE)));
     optionsMenu.add(this.sendScoresItem = new JCheckBoxMenuItem(I18n.getLocalizedString("item.send_scores.text"),
         config.getValue(ConfigTags.SEND_SCORES)), 2);
     this.sendScoresItem.setMnemonic(I18n.getLocalizedMnemonic("item.send_scores"));
@@ -160,7 +164,7 @@ public class MainFrame extends ApplicationFrame<MainController> {
     this.difficultyMenu.setEnabled(!gameRunning);
   }
 
-  public void resetGrid(Dimension size, boolean tabletMode) {
+  public void resetGrid(Dimension size, int buttonsSize) {
     if (this.gridPnl.getComponentCount() > 0)
       this.gridPnl.remove(0);
     int rows = size.height;
@@ -170,7 +174,7 @@ public class MainFrame extends ApplicationFrame<MainController> {
 
     for (int row = 0; row < rows; row++) {
       for (int col = 0; col < cols; col++) {
-        CellLabel b = new CellLabel(new Point(col, row), tabletMode);
+        CellLabel b = new CellLabel(new Point(col, row), buttonsSize);
         grid.add(b);
       }
     }
@@ -229,17 +233,27 @@ public class MainFrame extends ApplicationFrame<MainController> {
     this.scoresDialog.setVisible(true);
   }
 
+  /**
+   * Shows the options dialog.
+   * 
+   * @param config the current config
+   * @return the new config
+   */
+  public Optional<WritableConfig> showOptionsDialog(WritableConfig config) {
+    this.optionsDialog.setConfig(config.clone());
+    this.optionsDialog.setVisible(true);
+    return this.optionsDialog.getConfig();
+  }
+
   public final class CellLabel extends JLabel {
     private static final long serialVersionUID = 2612596853217381012L;
 
     public static final int PADDING = 4;
-    public static final int NORMAL_SIZE = 15;
-    public static final int BIG_SIZE = 20;
 
     private final Point coordinates;
     private boolean clicked;
 
-    private CellLabel(final Point coordinates, boolean tabletMode) {
+    private CellLabel(final Point coordinates, int buttonsSize) {
       this.coordinates = coordinates;
       this.clicked = false;
 
@@ -248,10 +262,7 @@ public class MainFrame extends ApplicationFrame<MainController> {
       setOpaque(true);
       setBackground(Color.LIGHT_GRAY);
 
-      if (tabletMode)
-        setPreferredSize(new Dimension(BIG_SIZE + PADDING, BIG_SIZE + PADDING));
-      else
-        setPreferredSize(new Dimension(NORMAL_SIZE + PADDING, NORMAL_SIZE + PADDING));
+      setPreferredSize(new Dimension(buttonsSize + PADDING, buttonsSize + PADDING));
 
       addMouseListener(new MouseAdapter() {
         @Override
