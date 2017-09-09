@@ -345,8 +345,11 @@ public class MainController extends ApplicationController<MainFrame> {
     if (victory) {
       msg += "\n" + I18n.getLocalizedString("popup.enter_name.text");
       String name = JOptionPane.showInputDialog(this.frame, msg, title, JOptionPane.QUESTION_MESSAGE);
-      this.scores.get(this.difficulty).add(new Score(name, Duration.ofSeconds(this.lastTime)));
-      sortScores(this.difficulty);
+
+      if (name != null) {
+        this.scores.get(this.difficulty).add(new Score(name, Duration.ofSeconds(this.lastTime)));
+        sortScores(this.difficulty);
+      }
     }
     else {
       JOptionPane.showMessageDialog(this.frame, msg, title, JOptionPane.INFORMATION_MESSAGE);
@@ -379,5 +382,9 @@ public class MainController extends ApplicationController<MainFrame> {
 
   private int booleanToInt(boolean value) {
     return value ? 1 : 0;
+  }
+
+  private void sendScore(Score score, Difficulty difficulty) {
+    // TODO
   }
 }
