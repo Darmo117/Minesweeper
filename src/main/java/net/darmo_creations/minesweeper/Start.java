@@ -22,6 +22,7 @@ import net.darmo_creations.gui_framework.GuiFramework;
 
 public class Start {
   public static void main(String[] args) {
+    Minesweeper.debug = args.length >= 1 && args[0].equalsIgnoreCase("debug");
     GuiFramework.run(Minesweeper.class);
   }
 }

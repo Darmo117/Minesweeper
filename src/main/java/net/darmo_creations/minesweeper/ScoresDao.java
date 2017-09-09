@@ -154,8 +154,7 @@ public class ScoresDao {
 
   public boolean sendScore(Score score, Difficulty difficulty) {
     try {
-      // TODO use real URL.
-      String url = "http://darmo-creations.local/products/minesweeper/post_scores.php";
+      String url = String.format("http://darmo-creations.%s/products/minesweeper/post_scores.php", Minesweeper.debug ? "local" : "net");
       URL obj = new URL(url);
       HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
