@@ -22,6 +22,7 @@ import net.darmo_creations.gui_framework.config.tags.BooleanTag;
 
 public final class ConfigTags {
   public static final BooleanTag BIG_BUTTONS = new BooleanTag("big_buttons");
+  public static final BooleanTag SEND_SCORES = new BooleanTag("send_scores");
 
   private ConfigTags() {}
 }

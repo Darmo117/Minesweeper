@@ -62,7 +62,7 @@ public class MainController extends ApplicationController<MainFrame> {
   private int lastTime;
   private Map<Difficulty, List<Score>> scores;
 
-  private boolean bigButtons;
+  private boolean bigButtons, sendScores;
 
   public MainController(MainFrame frame, WritableConfig config) {
     super(frame, config);
@@ -72,6 +72,7 @@ public class MainController extends ApplicationController<MainFrame> {
   public void init() {
     super.init();
     this.bigButtons = this.config.getValue(ConfigTags.BIG_BUTTONS);
+    this.sendScores = this.config.getValue(ConfigTags.SEND_SCORES);
     this.scores = new TreeMap<>(ScoresDao.getInstance().load());
     sortScores(null);
     this.lastTime = 0;
@@ -95,8 +96,12 @@ public class MainController extends ApplicationController<MainFrame> {
           case NEW_GAME:
             resetGame();
             break;
-          case TOGGLE_TABLET_MODE:
+          case TOGGLE_BIG_BUTTONS:
             toggleBigButtons();
+            break;
+          case TOGGLE_SEND_SCORES:
+            this.sendScores = !this.sendScores;
+            this.config.setValue(ConfigTags.SEND_SCORES, this.sendScores);
             break;
           case SHOW_SCORES:
             this.frame.showScoresDialog(this.scores);
@@ -351,7 +356,8 @@ public class MainController extends ApplicationController<MainFrame> {
 
         this.scores.get(this.difficulty).add(score);
         sortScores(this.difficulty);
-        ScoresDao.getInstance().sendScore(score, this.difficulty);
+        if (this.sendScores)
+          ScoresDao.getInstance().sendScore(score, this.difficulty);
       }
     }
     else {

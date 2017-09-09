@@ -72,7 +72,7 @@ public class MainFrame extends ApplicationFrame<MainController> {
   private ScoresDialog scoresDialog;
 
   private JMenu difficultyMenu;
-  private JCheckBoxMenuItem bigButtonsItem;
+  private JCheckBoxMenuItem bigButtonsItem, sendScoresItem;
   private JLabel remainingLbl, timeLbl;
   private JPanel gridPnl;
 
@@ -124,10 +124,6 @@ public class MainFrame extends ApplicationFrame<MainController> {
     gameMenu.add(i = new JMenuItem(I18n.getLocalizedString("item.scores.text")));
     i.setMnemonic(I18n.getLocalizedMnemonic("item.scores"));
     i.addActionListener(e -> ApplicationRegistry.EVENTS_BUS.dispatchEvent(new UserEvent(EventType.SHOW_SCORES)));
-    gameMenu.add(this.bigButtonsItem = new JCheckBoxMenuItem(I18n.getLocalizedString("item.big_buttons.text"),
-        config.getValue(ConfigTags.BIG_BUTTONS)));
-    this.bigButtonsItem.setMnemonic(I18n.getLocalizedMnemonic("item.big_buttons"));
-    this.bigButtonsItem.addActionListener(e -> ApplicationRegistry.EVENTS_BUS.dispatchEvent(new UserEvent(EventType.TOGGLE_TABLET_MODE)));
     gameMenu.add(i = new JMenuItem(I18n.getLocalizedString("item.exit.text")));
     i.setMnemonic(I18n.getLocalizedMnemonic("item.exit"));
     i.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
@@ -145,6 +141,16 @@ public class MainFrame extends ApplicationFrame<MainController> {
 
     menubar.add(gameMenu, 0);
     menubar.add(this.difficultyMenu, 1);
+
+    JMenu optionsMenu = menubar.getMenu(2);
+    optionsMenu.add(this.bigButtonsItem = new JCheckBoxMenuItem(I18n.getLocalizedString("item.big_buttons.text"),
+        config.getValue(ConfigTags.BIG_BUTTONS)), 1);
+    this.bigButtonsItem.setMnemonic(I18n.getLocalizedMnemonic("item.big_buttons"));
+    this.bigButtonsItem.addActionListener(e -> ApplicationRegistry.EVENTS_BUS.dispatchEvent(new UserEvent(EventType.TOGGLE_BIG_BUTTONS)));
+    optionsMenu.add(this.sendScoresItem = new JCheckBoxMenuItem(I18n.getLocalizedString("item.send_scores.text"),
+        config.getValue(ConfigTags.SEND_SCORES)), 2);
+    this.sendScoresItem.setMnemonic(I18n.getLocalizedMnemonic("item.send_scores"));
+    this.sendScoresItem.addActionListener(e -> ApplicationRegistry.EVENTS_BUS.dispatchEvent(new UserEvent(EventType.TOGGLE_SEND_SCORES)));
 
     return menubar;
   }

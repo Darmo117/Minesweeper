@@ -44,6 +44,7 @@ public class Minesweeper implements Application {
     ApplicationRegistry.setLanguages(l);
 
     WritableConfig.registerTag(ConfigTags.BIG_BUTTONS, false);
+    WritableConfig.registerTag(ConfigTags.SEND_SCORES, true);
   }
 
   @Override

@@ -27,6 +27,7 @@ import net.darmo_creations.gui_framework.events.UserEvent;
  */
 public enum EventType implements UserEvent.Type {
   NEW_GAME,
-  TOGGLE_TABLET_MODE,
+  TOGGLE_BIG_BUTTONS,
+  TOGGLE_SEND_SCORES,
   SHOW_SCORES;
 }
