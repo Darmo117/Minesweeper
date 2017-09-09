@@ -347,8 +347,11 @@ public class MainController extends ApplicationController<MainFrame> {
       String name = JOptionPane.showInputDialog(this.frame, msg, title, JOptionPane.QUESTION_MESSAGE);
 
       if (name != null) {
-        this.scores.get(this.difficulty).add(new Score(name, Duration.ofSeconds(this.lastTime)));
+        Score score = new Score(name, Duration.ofSeconds(this.lastTime));
+
+        this.scores.get(this.difficulty).add(score);
         sortScores(this.difficulty);
+        ScoresDao.getInstance().sendScore(score, this.difficulty);
       }
     }
     else {
@@ -382,9 +385,5 @@ public class MainController extends ApplicationController<MainFrame> {
 
   private int booleanToInt(boolean value) {
     return value ? 1 : 0;
-  }
-
-  private void sendScore(Score score, Difficulty difficulty) {
-    // TODO
   }
 }
