@@ -346,6 +346,7 @@ public class MainController extends ApplicationController<MainFrame> {
       }
     }
     this.frame.updateMenus(false);
+    int choice = 0;
 
     if (victory) {
       msg += "\n" + I18n.getLocalizedString("popup.enter_name.text");
@@ -359,13 +360,14 @@ public class MainController extends ApplicationController<MainFrame> {
         if (this.sendScores)
           ScoresDao.getInstance().sendScore(score, this.difficulty);
       }
+      choice = JOptionPane.showConfirmDialog(this.frame, I18n.getLocalizedString("popup.play_again.text"), title, JOptionPane.YES_NO_OPTION,
+          JOptionPane.QUESTION_MESSAGE);
     }
     else {
-      JOptionPane.showMessageDialog(this.frame, msg, title, JOptionPane.INFORMATION_MESSAGE);
+      choice = JOptionPane.showConfirmDialog(this.frame, msg + "\n" + I18n.getLocalizedString("popup.play_again.text"), title,
+          JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
     }
 
-    int choice = JOptionPane.showConfirmDialog(this.frame, I18n.getLocalizedString("popup.play_again.text"), title,
-        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
     if (choice == JOptionPane.YES_OPTION)
       resetGame();
   }
