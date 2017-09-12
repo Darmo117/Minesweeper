@@ -1,2 +1,2 @@
 # Minesweeper
-Minesweeper game now in Java.
+Minesweeper game in Java.
