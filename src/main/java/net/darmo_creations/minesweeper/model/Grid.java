@@ -59,53 +59,65 @@ public class Grid {
     Point p = event.getCell().getCoordinates();
     int col = p.x, row = p.y;
     Cell cell = this.grid[row][col];
-    CellLabel label = event.getCell();
 
     if (!cell.isFlagged()) {
       int nearbyMines = getNearbyMinesNumber(row, col);
 
       if (cell.isClicked() && getNearbyFlagsNumber(row, col) == nearbyMines) {
-        if (row > 0)
-          exploreGrid(row - 1, col, false);
-        if (row > 0 && col < getColumns() - 1)
-          exploreGrid(row - 1, col + 1, false);
-        if (col < getColumns() - 1)
-          exploreGrid(row, col + 1, false);
-        if (row < getRows() - 1 && col < getColumns() - 1)
-          exploreGrid(row + 1, col + 1, false);
-        if (row < getRows() - 1)
-          exploreGrid(row + 1, col, false);
-        if (row < getRows() - 1 && col > 0)
-          exploreGrid(row + 1, col - 1, false);
-        if (col > 0)
-          exploreGrid(row, col - 1, false);
-        if (row > 0 && col > 0)
-          exploreGrid(row - 1, col - 1, false);
+        return exploreNeighbors(row, col);
+      }
+      else {
+        return click(cell, event.getCell(), row, col, nearbyMines);
+      }
+    }
+    return 0;
+  }
+
+  private int click(Cell cell, CellLabel label, int row, int col, int nearbyMines) {
+    switch (cell.click(nearbyMines)) {
+      case Cell.NOTHING:
+        label.click();
+        label.setBackground(new Color(150, 150, 150));
+        label.setIcon(Images.NUMBERS[nearbyMines]);
+        if (nearbyMines == 0)
+          exploreGrid(row, col, true);
         if (checkVictory()) {
           return WIN;
         }
-      }
-      else {
-        int res = cell.click(nearbyMines);
+        break;
+      case Cell.MINE:
+        label.click();
+        label.setBackground(Color.RED);
+        label.setIcon(Images.MINE);
+        return LOST;
+    }
+    return 0;
+  }
 
-        switch (res) {
-          case Cell.NOTHING:
-            label.click();
-            label.setBackground(new Color(150, 150, 150));
-            label.setIcon(Images.NUMBERS[nearbyMines]);
-            if (nearbyMines == 0)
-              exploreGrid(row, col, true);
-            if (checkVictory()) {
-              return WIN;
-            }
-            break;
-          case Cell.MINE:
-            label.click();
-            label.setBackground(Color.RED);
-            label.setIcon(Images.MINE);
-            return LOST;
-        }
-      }
+  private int exploreNeighbors(int row, int col) {
+    boolean mine = false;
+    if (row > 0)
+      mine = exploreGrid(row - 1, col, false);
+    if (!mine && row > 0 && col < getColumns() - 1)
+      mine = exploreGrid(row - 1, col + 1, false);
+    if (!mine && col < getColumns() - 1)
+      mine = exploreGrid(row, col + 1, false);
+    if (!mine && row < getRows() - 1 && col < getColumns() - 1)
+      mine = exploreGrid(row + 1, col + 1, false);
+    if (!mine && row < getRows() - 1)
+      mine = exploreGrid(row + 1, col, false);
+    if (!mine && row < getRows() - 1 && col > 0)
+      mine = exploreGrid(row + 1, col - 1, false);
+    if (!mine && col > 0)
+      mine = exploreGrid(row, col - 1, false);
+    if (!mine && row > 0 && col > 0)
+      mine = exploreGrid(row - 1, col - 1, false);
+
+    if (mine) {
+      return LOST;
+    }
+    else if (checkVictory()) {
+      return WIN;
     }
     return 0;
   }
@@ -141,16 +153,20 @@ public class Grid {
    * @param row the starting row
    * @param col the starting column
    * @param ignoreCenter if true, the center cell (the one that was clicked) will be ignored
+   * @return true if the cell at the coordinates was a mine
    */
-  private void exploreGrid(int row, int col, boolean ignoreCenter) {
+  private boolean exploreGrid(int row, int col, boolean ignoreCenter) {
     Cell cell = this.grid[row][col];
 
     if ((!ignoreCenter && cell.isClicked()) || cell.isFlagged())
-      return;
+      return false;
 
     if (!ignoreCenter) {
       int mines = getNearbyMinesNumber(row, col);
-      cell.click(mines);
+      int result = cell.click(mines);
+      if (result == Cell.MINE) {
+        return true;
+      }
       CellLabel label = this.cellLabelProvider.getLabel(row, col);
       label.click();
       label.setBackground(new Color(150, 150, 150));
@@ -175,6 +191,7 @@ public class Grid {
       if (row > 0 && col > 0)
         exploreGrid(row - 1, col - 1, false);
     }
+    return false;
   }
 
   public void endGame() {
