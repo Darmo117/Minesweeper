@@ -81,7 +81,7 @@ public class Minesweeper extends Application {
 
   @Override
   public Optional<String> getHelpDocumentationLink(Language language) {
-    return Optional.empty();
+    return null;
   }
 
   public static void main(String[] args) {
