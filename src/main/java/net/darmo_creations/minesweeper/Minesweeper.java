@@ -32,9 +32,7 @@ import net.darmo_creations.minesweeper.gui.MainFrame;
 import net.darmo_creations.utils.version.Version;
 
 public class Minesweeper implements Application {
-  public static boolean debug;
-
-  public static final Version CURRENT_VERSION = new Version(1, 1, 0, false);
+  public static final Version CURRENT_VERSION = new Version(1, 2, 0, false);
 
   @Override
   public void preInit() {
@@ -45,7 +43,6 @@ public class Minesweeper implements Application {
 
     ApplicationRegistry.setLanguages(l);
 
-    WritableConfig.registerTag(ConfigTags.SEND_SCORES, true);
     WritableConfig.registerTag(ConfigTags.BUTTONS_SIZE, 15);
   }
 

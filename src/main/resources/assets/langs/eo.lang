@@ -1,6 +1,6 @@
 dialog.scores.title=Plej bonaj poentaroj
 dialog.settings.title=Agordoj
-dialog.about.title=Pri
+dialog.about.title=Pri la ludo
 dialog.update.title=Ĝisdatigo havebla
 
 popup.laf_error.title=Eraro
@@ -8,7 +8,7 @@ popup.laf_error.text=Ne povis ŝarĝi sistemon GUI. Uzante defaŭlta.
 popup.confirm.title=Konfirmi
 popup.victory.title=Venko!
 popup.victory.text=Vi venkis!
-popup.game_over.title=La ludo finiĝis!
+popup.game_over.title=La ludo estas finita!
 popup.game_over.text=Vi perdis!
 popup.enter_name.text=Tajpu nomon:
 popup.play_again.text=Ĉu vi volas reludi?
@@ -31,13 +31,11 @@ item.check_updates.text=Kontroli ĝisdatigoj al la programoinicio
 item.check_updates.mnemonic=k
 item.settings.text=Agordoj…
 item.settings.mnemonic=b
-item.send_scores.text=Sendi poentaroj al la servilo
-item.send_scores.mnemonic=s
 menu.lang.text=Lingvo
 menu.lang.mnemonic=l
 menu.help.text=Helpo
 menu.help.mnemonic=h
-item.about.text=Pri
+item.about.text=Pri la ludo
 item.about.mnemonic=p
 
 label.mines.text=Mino
@@ -45,13 +43,13 @@ label.username.text=Pseŭdonomo
 label.time.text=Tempo
 label.buttons_size.text=Dimensioj de la butonoj
 
-label.updates_check_blocked.text=Kontrolo de ĝisdatigoj malaktivitita
+label.updates_check_blocked.text=Kontrolo de ĝisdatigoj malaktivitata
 label.checking_updates.text=Kontrolanta ĝisdatigoj
 label.update_check_failed.text=Kontrolo de ĝisdatigoj malsukcesis
 label.update_available.text=Ĝisdatigo havebla
 label.no_update.text=Neniom ĝisdatigo havebla
 label.download_link.text=Elŝutu tien:
-label.changelog.text=Changelog:
+label.changelog.text=Ŝanĝoj:
 
 button.close.text=Fermi
 button.validate.text=Validigi

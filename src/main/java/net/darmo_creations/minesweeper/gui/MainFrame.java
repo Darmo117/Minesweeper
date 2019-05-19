@@ -37,7 +37,6 @@ import java.util.Optional;
 
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -55,7 +54,6 @@ import net.darmo_creations.gui_framework.ApplicationRegistry;
 import net.darmo_creations.gui_framework.config.WritableConfig;
 import net.darmo_creations.gui_framework.events.UserEvent;
 import net.darmo_creations.gui_framework.gui.ApplicationFrame;
-import net.darmo_creations.minesweeper.ConfigTags;
 import net.darmo_creations.minesweeper.Images;
 import net.darmo_creations.minesweeper.MainController;
 import net.darmo_creations.minesweeper.events.CellClickedEvent;
@@ -76,7 +74,6 @@ public class MainFrame extends ApplicationFrame<MainController> {
 
   private JMenu difficultyMenu;
   private JMenuItem bigButtonsItem;
-  private JCheckBoxMenuItem sendScoresItem;
   private JLabel remainingLbl, timeLbl;
   private JPanel gridPnl;
 
@@ -151,10 +148,6 @@ public class MainFrame extends ApplicationFrame<MainController> {
     optionsMenu.add(this.bigButtonsItem = new JMenuItem(I18n.getLocalizedString("item.settings.text")), 1);
     this.bigButtonsItem.setMnemonic(I18n.getLocalizedMnemonic("item.settings"));
     this.bigButtonsItem.addActionListener(e -> ApplicationRegistry.EVENTS_BUS.dispatchEvent(new UserEvent(EventType.SHOW_BUTTONS_SIZE)));
-    optionsMenu.add(this.sendScoresItem = new JCheckBoxMenuItem(I18n.getLocalizedString("item.send_scores.text"),
-        config.getValue(ConfigTags.SEND_SCORES)), 2);
-    this.sendScoresItem.setMnemonic(I18n.getLocalizedMnemonic("item.send_scores"));
-    this.sendScoresItem.addActionListener(e -> ApplicationRegistry.EVENTS_BUS.dispatchEvent(new UserEvent(EventType.TOGGLE_SEND_SCORES)));
 
     return menubar;
   }
@@ -251,11 +244,11 @@ public class MainFrame extends ApplicationFrame<MainController> {
     public static final int PADDING = 4;
 
     private final Point coordinates;
-    private boolean clicked;
+    private boolean locked;
 
     private CellLabel(final Point coordinates, int buttonsSize) {
       this.coordinates = coordinates;
-      this.clicked = false;
+      this.locked = false;
 
       setIcon(Images.EMPTY_CELL);
       setBorder(new BevelBorder(BevelBorder.RAISED));
@@ -267,7 +260,7 @@ public class MainFrame extends ApplicationFrame<MainController> {
       addMouseListener(new MouseAdapter() {
         @Override
         public void mousePressed(MouseEvent e) {
-          if (!CellLabel.this.clicked && (SwingUtilities.isLeftMouseButton(e) || SwingUtilities.isRightMouseButton(e))) {
+          if (!CellLabel.this.locked && (SwingUtilities.isLeftMouseButton(e) || SwingUtilities.isRightMouseButton(e))) {
             ApplicationRegistry.EVENTS_BUS.dispatchEvent(new CellClickedEvent(CellLabel.this, SwingUtilities.isLeftMouseButton(e)));
           }
         }
@@ -279,12 +272,11 @@ public class MainFrame extends ApplicationFrame<MainController> {
     }
 
     public void lock() {
-      this.clicked = true;
+      this.locked = true;
     }
 
     public void click() {
       CellLabel.this.setBorder(new CompoundBorder(new LineBorder(Color.GRAY.darker(), 1), new EmptyBorder(1, 1, 1, 1)));
-      CellLabel.this.clicked = true;
     }
 
     public void setIcon(ImageIcon imageIcon) {

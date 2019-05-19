@@ -31,8 +31,6 @@ item.check_updates.text=Vérifier les mises à jour au démarrage
 item.check_updates.mnemonic=v
 item.settings.text=Paramètres…
 item.settings.mnemonic=p
-item.send_scores.text=Envoyer les scores au serveur
-item.send_scores.mnemonic=e
 menu.lang.text=Langue
 menu.lang.mnemonic=l
 menu.help.text=Aide
@@ -51,7 +49,7 @@ label.update_check_failed.text=La vérification des mises à jour a échoué
 label.update_available.text=Mise à jour disponible
 label.no_update.text=Aucune mise à jour disponible
 label.download_link.text=Lien de téléchargement :
-label.changelog.text=Changelog :
+label.changelog.text=Changements :
 
 button.close.text=Fermer
 button.validate.text=Valider

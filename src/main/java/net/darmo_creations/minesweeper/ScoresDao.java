@@ -18,22 +18,15 @@
  */
 package net.darmo_creations.minesweeper;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringJoiner;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -46,9 +39,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import net.darmo_creations.minesweeper.model.Difficulty;
@@ -109,6 +100,11 @@ public class ScoresDao {
           }
           scores.put(difficulty, scoresList);
         }
+        for (Difficulty diff : Difficulty.values()) {
+          if (!scores.containsKey(diff)) {
+            scores.put(diff, new ArrayList<>());
+          }
+        }
       }
     }
     catch (NullPointerException | ClassCastException | ParserConfigurationException | SAXException | IOException ex) {}
@@ -150,56 +146,6 @@ public class ScoresDao {
       transformer.transform(new DOMSource(doc), result);
     }
     catch (ParserConfigurationException | TransformerException | UnsupportedEncodingException ex) {}
-  }
-
-  public boolean sendScore(Score score, Difficulty difficulty) {
-    try {
-      String url = String.format("http://darmo-creations.%s/products/minesweeper/post_scores.php", Minesweeper.debug ? "local" : "net");
-      URL obj = new URL(url);
-      HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-      con.setRequestMethod("POST");
-
-      StringJoiner urlParameters = new StringJoiner("&");
-      urlParameters.add("username=" + score.getUsername());
-      urlParameters.add("time=" + score.getDuration().getSeconds());
-      urlParameters.add("difficulty=" + difficulty.name().toLowerCase());
-
-      con.setDoOutput(true);
-      try (DataOutputStream wr = new DataOutputStream(con.getOutputStream())) {
-        wr.writeBytes(urlParameters.toString());
-        wr.flush();
-      }
-
-      if (con.getResponseCode() == 200) {
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
-          String inputLine;
-          StringBuffer response = new StringBuffer();
-
-          while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
-          }
-
-          DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-          Document doc = dBuilder.parse(new InputSource(new StringReader(response.toString())));
-          Element root = (Element) doc.getElementsByTagName("response").item(0);
-          if (root != null) {
-            Node node = root.getElementsByTagName("code").item(0);
-            if (node != null) {
-              int code = Integer.parseInt(node.getTextContent());
-
-              if (code == 200)
-                return true;
-            }
-          }
-        }
-      }
-
-      return false;
-    }
-    catch (IOException | SAXException | ParserConfigurationException | NumberFormatException ex) {
-      return false;
-    }
   }
 
   private ScoresDao() {}

@@ -18,7 +18,6 @@
  */
 package net.darmo_creations.minesweeper;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.time.Duration;
@@ -26,7 +25,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.TreeMap;
 
 import javax.swing.JOptionPane;
@@ -40,8 +38,9 @@ import net.darmo_creations.minesweeper.events.EventType;
 import net.darmo_creations.minesweeper.events.TimerEvent;
 import net.darmo_creations.minesweeper.gui.MainFrame;
 import net.darmo_creations.minesweeper.gui.MainFrame.CellLabel;
-import net.darmo_creations.minesweeper.model.Cell;
+import net.darmo_creations.minesweeper.model.CellLabelProvider;
 import net.darmo_creations.minesweeper.model.Difficulty;
+import net.darmo_creations.minesweeper.model.Grid;
 import net.darmo_creations.minesweeper.model.Score;
 import net.darmo_creations.minesweeper.model.Timer;
 import net.darmo_creations.utils.I18n;
@@ -52,13 +51,11 @@ import net.darmo_creations.utils.events.SubsribeEvent;
  *
  * @author Damien Vergnet
  */
-public class MainController extends ApplicationController<MainFrame> {
-  private Cell[][] grid;
+public class MainController extends ApplicationController<MainFrame> implements CellLabelProvider {
   private Difficulty difficulty;
+  private Grid grid;
   private boolean started;
   private boolean finished;
-  /** Number of remaining flags */
-  private int flags;
   private Timer timer;
   private int lastTime;
   private Map<Difficulty, List<Score>> scores;
@@ -95,9 +92,6 @@ public class MainController extends ApplicationController<MainFrame> {
             break;
           case SHOW_BUTTONS_SIZE:
             setButtonsSize();
-            break;
-          case TOGGLE_SEND_SCORES:
-            this.config.setValue(ConfigTags.SEND_SCORES, !this.config.getValue(ConfigTags.SEND_SCORES));
             break;
           case SHOW_SCORES:
             this.frame.showScoresDialog(this.scores);
@@ -147,119 +141,29 @@ public class MainController extends ApplicationController<MainFrame> {
 
   @SubsribeEvent
   public void onCellClicked(CellClickedEvent e) {
-    Point p = e.getCell().getCoordinates();
     if (!this.started) {
-      startGame(p);
+      startGame(e.getCell().getCoordinates());
     }
 
-    Cell cell = this.grid[p.y][p.x];
-    CellLabel label = e.getCell();
-
-    if (e.isMainClick() && !cell.isFlagged()) {
-      clickCell(cell, label);
-    }
-    else if (!e.isMainClick()) {
-      if (cell.isFlagged()) {
-        cell.setMarked(true);
-        label.setIcon(Images.MARK);
-        if (this.started && !this.finished)
-          this.flags++;
-        this.frame.setRemainingMines(this.flags);
-      }
-      else if (cell.isMarked()) {
-        cell.setMarked(false);
-        label.setIcon(Images.EMPTY_CELL);
+    if (!this.finished) {
+      if (e.isMainClick()) {
+        clickCell(e);
       }
       else {
-        cell.setFlagged(true);
-        label.setIcon(Images.FLAG);
-        if (this.started && !this.finished)
-          this.flags--;
-        this.frame.setRemainingMines(this.flags);
+        this.grid.performSecondaryClick(e);
+        this.frame.setRemainingMines(this.grid.getRemainingFlags());
       }
     }
   }
 
-  private void clickCell(Cell cell, CellLabel label) {
-    Point p = label.getCoordinates();
-    int nearbyMines = getNearbyMinesNumber(p.y, p.x);
-    int res = cell.click(nearbyMines);
-
-    switch (res) {
-      case Cell.NOTHING:
-        label.click();
-        label.setBackground(new Color(150, 150, 150));
-        label.setIcon(Images.NUMBERS[nearbyMines]);
-        if (nearbyMines == 0)
-          exploreGrid(p.y, p.x, true);
-        if (checkVictory()) {
-          endGame(true);
-        }
-        break;
-      case Cell.MINE:
-        label.click();
-        label.setBackground(Color.RED);
-        label.setIcon(Images.MINE);
-        endGame(false);
-        break;
+  private void clickCell(CellClickedEvent event) {
+    int result = this.grid.performMainClick(event);
+    if (result == Grid.WIN) {
+      endGame(true);
     }
-  }
-
-  /**
-   * Explores all the non-clicked cells from the given starting cell that don't have any mines
-   * nearby.
-   * 
-   * @param row the starting row
-   * @param col the starting column
-   */
-  private void exploreGrid(int row, int col, boolean ignoreClicked) {
-    Cell cell = this.grid[row][col];
-
-    if ((!ignoreClicked && cell.isClicked()) || cell.isFlagged())
-      return;
-
-    if (!ignoreClicked)
-      clickCell(cell, this.frame.getCell(new Point(col, row)));
-
-    if (getNearbyMinesNumber(row, col) == 0) {
-      if (row > 0)
-        exploreGrid(row - 1, col, false);
-      if (row > 0 && col < this.difficulty.getColumns() - 1)
-        exploreGrid(row - 1, col + 1, false);
-      if (col < this.difficulty.getColumns() - 1)
-        exploreGrid(row, col + 1, false);
-      if (row < this.difficulty.getRows() - 1 && col < this.difficulty.getColumns() - 1)
-        exploreGrid(row + 1, col + 1, false);
-      if (row < this.difficulty.getRows() - 1)
-        exploreGrid(row + 1, col, false);
-      if (row < this.difficulty.getRows() - 1 && col > 0)
-        exploreGrid(row + 1, col - 1, false);
-      if (col > 0)
-        exploreGrid(row, col - 1, false);
-      if (row > 0 && col > 0)
-        exploreGrid(row - 1, col - 1, false);
+    else if (result == Grid.LOST) {
+      endGame(false);
     }
-  }
-
-  /**
-   * Returns {@code true} if the only remaining cells contain mines; false otherwise.
-   */
-  private boolean checkVictory() {
-    if (!this.started)
-      return false;
-
-    boolean win = true;
-
-    loop: for (int row = 0; row < this.difficulty.getRows(); row++) {
-      for (int col = 0; col < this.difficulty.getColumns(); col++) {
-        if (!this.grid[row][col].isClicked() && !this.grid[row][col].isMine()) {
-          win = false;
-          break loop;
-        }
-      }
-    }
-
-    return win;
   }
 
   @SubsribeEvent
@@ -275,19 +179,11 @@ public class MainController extends ApplicationController<MainFrame> {
     this.timer = new Timer();
 
     this.started = this.finished = false;
-    this.flags = this.difficulty.getMines();
-    this.grid = new Cell[this.difficulty.getRows()][this.difficulty.getColumns()];
-
-    // Grid generation.
-    for (int row = 0; row < this.difficulty.getRows(); row++) {
-      for (int col = 0; col < this.difficulty.getColumns(); col++) {
-        this.grid[row][col] = new Cell(row, col);
-      }
-    }
+    this.grid = new Grid(this.difficulty, this);
 
     this.frame.resetGrid(new Dimension(this.difficulty.getColumns(), this.difficulty.getRows()),
         this.config.getValue(ConfigTags.BUTTONS_SIZE));
-    this.frame.setRemainingMines(this.flags);
+    this.frame.setRemainingMines(this.grid.getRemainingFlags());
     this.frame.setTimer(0, 0, 0);
     this.frame.updateMenus(false);
     this.frame.pack();
@@ -302,20 +198,7 @@ public class MainController extends ApplicationController<MainFrame> {
   private void startGame(Point clickedCell) {
     this.started = true;
     this.frame.updateMenus(true);
-
-    // Mines generation
-    for (int i = 0; i < this.difficulty.getMines(); i++) {
-      int col, row;
-      Random rand = new Random();
-
-      do {
-        col = rand.nextInt(this.difficulty.getColumns());
-        row = rand.nextInt(this.difficulty.getRows());
-      } while (this.grid[row][col].isMine() || row == clickedCell.y && col == clickedCell.x);
-
-      this.grid[row][col].setMine(true);
-    }
-
+    this.grid.generateMines(clickedCell.y, clickedCell.x);
     this.timer.start();
   }
 
@@ -331,20 +214,7 @@ public class MainController extends ApplicationController<MainFrame> {
     this.finished = true;
     this.timer.interrupt();
 
-    for (int row = 0; row < this.difficulty.getRows(); row++) {
-      for (int col = 0; col < this.difficulty.getColumns(); col++) {
-        Cell cell = this.grid[row][col];
-        CellLabel label = this.frame.getCell(new Point(col, row));
-
-        label.lock();
-        if (cell.isMine()) {
-          label.setIcon(Images.MINE);
-        }
-        else if (!cell.isMine() && cell.isFlagged()) {
-          label.setIcon(Images.WRONG_MINE);
-        }
-      }
-    }
+    this.grid.endGame();
     this.frame.updateMenus(false);
     int choice = 0;
 
@@ -357,8 +227,6 @@ public class MainController extends ApplicationController<MainFrame> {
 
         this.scores.get(this.difficulty).add(score);
         sortScores(this.difficulty);
-        if (this.config.getValue(ConfigTags.SEND_SCORES))
-          ScoresDao.getInstance().sendScore(score, this.difficulty);
       }
       choice = JOptionPane.showConfirmDialog(this.frame, I18n.getLocalizedString("popup.play_again.text"), title, JOptionPane.YES_NO_OPTION,
           JOptionPane.QUESTION_MESSAGE);
@@ -372,26 +240,8 @@ public class MainController extends ApplicationController<MainFrame> {
       resetGame();
   }
 
-  /**
-   * Returns the number of mines in the 8 adjacent cells to the one at the specified coordinates.
-   * 
-   * @param row the row
-   * @param col the column
-   * 
-   * @return the number of nearby mines
-   */
-  private int getNearbyMinesNumber(int row, int col) {
-    return (row > 0 ? booleanToInt(this.grid[row - 1][col].isMine()) : 0) + //
-        (col < this.grid[0].length - 1 && row > 0 ? booleanToInt(this.grid[row - 1][col + 1].isMine()) : 0) + //
-        (col < this.grid[0].length - 1 ? booleanToInt(this.grid[row][col + 1].isMine()) : 0) + //
-        (col < this.grid[0].length - 1 && row < this.grid.length - 1 ? booleanToInt(this.grid[row + 1][col + 1].isMine()) : 0) + //
-        (row < this.grid.length - 1 ? booleanToInt(this.grid[row + 1][col].isMine()) : 0) + //
-        (col > 0 && row < this.grid.length - 1 ? booleanToInt(this.grid[row + 1][col - 1].isMine()) : 0) + //
-        (col > 0 ? booleanToInt(this.grid[row][col - 1].isMine()) : 0) + //
-        (col > 0 && row > 0 ? booleanToInt(this.grid[row - 1][col - 1].isMine()) : 0);
-  }
-
-  private int booleanToInt(boolean value) {
-    return value ? 1 : 0;
-  }
+  @Override
+  public CellLabel getLabel(int row, int col) {
+    return this.frame.getCell(new Point(col, row));
+  };
 }
