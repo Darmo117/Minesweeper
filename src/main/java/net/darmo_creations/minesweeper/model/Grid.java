@@ -64,7 +64,7 @@ public class Grid {
     if (!cell.isFlagged()) {
       int nearbyMines = getNearbyMinesNumber(row, col);
 
-      if (getNearbyFlagsNumber(row, col) == nearbyMines) {
+      if (cell.isClicked() && getNearbyFlagsNumber(row, col) == nearbyMines) {
         if (row > 0)
           exploreGrid(row - 1, col, false);
         if (row > 0 && col < getColumns() - 1)
@@ -116,19 +116,21 @@ public class Grid {
     Cell cell = this.grid[row][col];
     CellLabel label = event.getCell();
 
-    if (cell.isFlagged()) {
-      cell.setMarked(true);
-      label.setIcon(Images.MARK);
-      this.flags++;
-    }
-    else if (cell.isMarked()) {
-      cell.setMarked(false);
-      label.setIcon(Images.EMPTY_CELL);
-    }
-    else {
-      cell.setFlagged(true);
-      label.setIcon(Images.FLAG);
-      this.flags--;
+    if (!cell.isClicked()) {
+      if (cell.isFlagged()) {
+        cell.setMarked(true);
+        label.setIcon(Images.MARK);
+        this.flags++;
+      }
+      else if (cell.isMarked()) {
+        cell.setMarked(false);
+        label.setIcon(Images.EMPTY_CELL);
+      }
+      else {
+        cell.setFlagged(true);
+        label.setIcon(Images.FLAG);
+        this.flags--;
+      }
     }
   }
 
