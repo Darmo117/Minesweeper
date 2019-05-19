@@ -74,6 +74,6 @@ public class SettingsDialog extends AbstractDialog {
   }
 
   public Optional<WritableConfig> getConfig() {
-    return Optional.ofNullable(isCanceled() ? null : this.controller.getConfig());
+    return Optional.ofNullable(isCancelled() ? null : this.controller.getConfig());
   }
 }

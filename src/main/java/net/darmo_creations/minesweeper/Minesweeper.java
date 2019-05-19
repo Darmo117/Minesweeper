@@ -19,30 +19,23 @@
 package net.darmo_creations.minesweeper;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
 import net.darmo_creations.gui_framework.Application;
-import net.darmo_creations.gui_framework.ApplicationRegistry;
 import net.darmo_creations.gui_framework.config.Language;
 import net.darmo_creations.gui_framework.config.WritableConfig;
 import net.darmo_creations.minesweeper.gui.MainFrame;
 import net.darmo_creations.utils.version.Version;
 
-public class Minesweeper implements Application {
-  public static final Version CURRENT_VERSION = new Version(1, 2, 0, false);
+public class Minesweeper extends Application {
+  public static final Version CURRENT_VERSION = new Version(1, 2, 1, false);
 
   @Override
   public void preInit() {
-    List<Language> l = new ArrayList<>();
-    l.add(new Language("English", Locale.US));
-    l.add(new Language("Français", Locale.FRANCE));
-    l.add(new Language("Esperanto", new Locale("eo")));
-
-    ApplicationRegistry.setLanguages(l);
-
+    setLanguages(new Language("English", Locale.US), //
+        new Language("Français", Locale.FRANCE), //
+        new Language("Esperanto", new Locale("eo")));
     WritableConfig.registerTag(ConfigTags.BUTTONS_SIZE, 15);
   }
 
@@ -77,32 +70,21 @@ public class Minesweeper implements Application {
   }
 
   @Override
-  public boolean checkUpdates() {
-    return true;
+  public String getRssUpdatesLink() {
+    return "https://github.com/Darmo117/Minesweeper/releases.atom";
   }
 
   @Override
-  public Optional<String> getRssUpdatesLink() {
-    return Optional.of("https://github.com/Darmo117/Minesweeper/releases.atom");
-  }
-
-  @Override
-  public boolean hasAboutDialog() {
-    return true;
-  }
-
-  @Override
-  public Optional<String> getAboutFilePath() {
-    return Optional.of("/assets/about.html");
-  }
-
-  @Override
-  public boolean hasHelpDocumentation() {
-    return false;
+  public String getAboutFilePath() {
+    return "/assets/about.html";
   }
 
   @Override
   public Optional<String> getHelpDocumentationLink(Language language) {
     return Optional.empty();
+  }
+
+  public static void main(String[] args) {
+    launch(args);
   }
 }

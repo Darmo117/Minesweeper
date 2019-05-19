@@ -31,6 +31,7 @@ public class CellClickedEvent extends AbstractEvent {
   private final boolean isMainClick;
 
   public CellClickedEvent(CellLabel cell, boolean isMainClick) {
+    super(false);
     this.cell = cell;
     this.isMainClick = isMainClick;
   }
@@ -41,10 +42,5 @@ public class CellClickedEvent extends AbstractEvent {
 
   public boolean isMainClick() {
     return this.isMainClick;
-  }
-
-  @Override
-  public boolean isCancelable() {
-    return false;
   }
 }

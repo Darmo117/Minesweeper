@@ -44,7 +44,7 @@ import net.darmo_creations.minesweeper.model.Grid;
 import net.darmo_creations.minesweeper.model.Score;
 import net.darmo_creations.minesweeper.model.Timer;
 import net.darmo_creations.utils.I18n;
-import net.darmo_creations.utils.events.SubsribeEvent;
+import net.darmo_creations.utils.events.SubscribeEvent;
 
 /**
  * Application's controller.
@@ -75,11 +75,11 @@ public class MainController extends ApplicationController<MainFrame> implements 
   }
 
   @Override
-  @SubsribeEvent
+  @SubscribeEvent
   public void onUserEvent(UserEvent e) {
     super.onUserEvent(e);
 
-    if (e.getType() == UserEvent.DefaultType.EXITING && !e.isCanceled()) {
+    if (e.getType() == UserEvent.DefaultType.EXITING && !e.isCancelled()) {
       this.timer.interrupt();
       ScoresDao.getInstance().save(this.scores);
     }
@@ -126,7 +126,7 @@ public class MainController extends ApplicationController<MainFrame> implements 
     }
   }
 
-  @SubsribeEvent
+  @SubscribeEvent
   public void onChangeDifficulty(ChangeDifficultyEvent e) {
     setGameDifficulty(e.getDifficulty());
   }
@@ -139,7 +139,7 @@ public class MainController extends ApplicationController<MainFrame> implements 
     }
   }
 
-  @SubsribeEvent
+  @SubscribeEvent
   public void onCellClicked(CellClickedEvent e) {
     if (!this.started) {
       startGame(e.getCell().getCoordinates());
@@ -166,7 +166,7 @@ public class MainController extends ApplicationController<MainFrame> implements 
     }
   }
 
-  @SubsribeEvent
+  @SubscribeEvent
   public void onTimerEvent(TimerEvent e) {
     this.lastTime = e.getHours() * 3600 + e.getMinutes() * 60 + e.getSeconds();
     this.frame.setTimer(e.getHours(), e.getMinutes(), e.getSeconds());

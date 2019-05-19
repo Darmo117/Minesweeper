@@ -1,7 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
 
-version = '1.2'
+version = '1.2.1'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -10,7 +10,7 @@ compileJava.options.encoding = 'UTF-8'
 // Creates the jar with all dependencies included inside
 task fatJar(type: Jar) {
   manifest {
-    attributes 'Main-Class': 'net.darmo_creations.minesweeper.Start',
+    attributes 'Main-Class': 'net.darmo_creations.minesweeper.Minesweeper',
                'Class-Path': '.'
   }
   // Packs all dependencies into the jar.
@@ -43,7 +43,7 @@ dependencies {
   // The production code uses the SLF4J logging API at compile time
   compile 'org.slf4j:slf4j-api:1.7.21'
   // GUI-Framework
-  compile files('libs/GUI-Framework-1.5d.jar')
+  compile files('libs/GUI-Framework-1.5.jar')
   // JUnit
   testCompile 'junit:junit:4.12'
 }

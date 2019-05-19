@@ -29,6 +29,7 @@ public class TimerEvent extends AbstractEvent {
   private final int hours, minutes, seconds;
 
   public TimerEvent(int hours, int minutes, int seconds) {
+    super(false);
     this.hours = hours;
     this.minutes = minutes;
     this.seconds = seconds;
@@ -44,10 +45,5 @@ public class TimerEvent extends AbstractEvent {
 
   public int getSeconds() {
     return this.seconds;
-  }
-
-  @Override
-  public boolean isCancelable() {
-    return false;
   }
 }

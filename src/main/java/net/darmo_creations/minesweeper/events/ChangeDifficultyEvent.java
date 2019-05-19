@@ -35,6 +35,7 @@ public class ChangeDifficultyEvent extends AbstractEvent {
    * @param difficulty the desired difficulty
    */
   public ChangeDifficultyEvent(Difficulty difficulty) {
+    super(false);
     this.difficulty = difficulty;
   }
 
@@ -43,10 +44,5 @@ public class ChangeDifficultyEvent extends AbstractEvent {
    */
   public Difficulty getDifficulty() {
     return this.difficulty;
-  }
-
-  @Override
-  public boolean isCancelable() {
-    return false;
   }
 }
